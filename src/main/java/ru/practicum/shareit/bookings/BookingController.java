@@ -21,13 +21,23 @@ public class BookingController {
     }
 
     @PostMapping()
-    public void addBooking(@Valid @RequestBody Booking booking) {
-        bookingServiceImpl.createBooking(booking);
+    public void addBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+                           @Valid @RequestBody Booking booking) {
+        bookingServiceImpl.createBooking(booking, userId);
     }
 
     @PutMapping()
-    public void updateBooking(@Valid @RequestBody Booking booking) {
-        bookingServiceImpl.updateBooking(booking);
+    public void updateBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+                              @Valid @RequestBody Booking booking) {
+        bookingServiceImpl.updateBooking(booking, userId);
+    }
+
+    @PatchMapping("/{bookingId}")
+    public void changeStatus (@PathVariable Long bookingId,
+                              @RequestParam Boolean approved,
+                              @RequestBody Booking booking,
+                              @RequestHeader("X-Sharer-User-Id") Long userId) {
+        bookingServiceImpl.changeStatus(bookingId, approved, booking.getId(), userId);
     }
 
     @DeleteMapping("/{id}")
@@ -40,9 +50,22 @@ public class BookingController {
         bookingServiceImpl.removeAllBookings();
     }
 
-    @GetMapping("/{id}")
-    public Booking getBookingById(@PathVariable("id") Long id) {
-        return bookingServiceImpl.getBookingById(id);
+    @GetMapping("/{bookingId}")
+    public Booking getBookingById(@PathVariable("bookingId") Long id,
+                                  @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return bookingServiceImpl.getBookingById(id, userId);
+    }
+
+    @GetMapping()
+    public Set<Booking> getBookingsOfUser(@RequestParam String state,
+                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return bookingServiceImpl.getBookingsOfUser(state, userId);
+    }
+
+    @GetMapping("/owner")
+    public Set<Booking> getBookingsOfOwner(@RequestParam String state,
+                                           @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return bookingServiceImpl.getBookingsOfOwner(state, userId);
     }
 
     @GetMapping()

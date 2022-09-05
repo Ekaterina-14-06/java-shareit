@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.bookings.Booking;
 import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.reviews.Review;
+import ru.practicum.shareit.reviews.ReviewServiceImpl;
+import ru.practicum.shareit.reviews.ReviewStorageInMemory;
 import ru.practicum.shareit.users.User;
 
 import javax.validation.Valid;
@@ -14,10 +16,13 @@ import java.util.Set;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemServiceImpl itemServiceImpl;
+    private final ReviewServiceImpl reviewServiceImpl;
 
     @Autowired
-    public ItemController(ItemServiceImpl itemServiceImpl) {
+    public ItemController(ItemServiceImpl itemServiceImpl,
+                          ReviewServiceImpl reviewServiceImpl) {
         this.itemServiceImpl = itemServiceImpl;
+        this.reviewServiceImpl = reviewServiceImpl;
     }
 
     @PostMapping()
@@ -52,9 +57,16 @@ public class ItemController {
         return itemServiceImpl.getItemById(id);
     }
 
+    /*
     @GetMapping()
     public Set<Item> getAvailableItems() {
         return itemServiceImpl.getAvailableItems();
+    }
+    */
+
+    @GetMapping()
+    public Set<ItemOfOwner> getItemsOfOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemServiceImpl.getItemsOfOwner(userId);
     }
 
     @GetMapping("/{id}/users")
@@ -80,5 +92,12 @@ public class ItemController {
     @GetMapping("/search")
     public Set<Item> findItemById(@RequestParam("text") String text) {
         return itemServiceImpl.findItemById(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public void addComment(@PathVariable("itemId") Long itemId,
+                           @RequestHeader("X-Sharer-User-Id") Long userId,
+                           @RequestBody Review review) {
+        reviewServiceImpl.addComment(itemId, userId, review);
     }
 }

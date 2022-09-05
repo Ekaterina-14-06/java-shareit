@@ -6,9 +6,11 @@ import ru.practicum.shareit.bookings.Booking;
 import ru.practicum.shareit.bookings.BookingStorageInMemory;
 import ru.practicum.shareit.items.Item;
 import ru.practicum.shareit.items.ItemStorageInMemory;
+import ru.practicum.shareit.statuses.StatusStorageInMemory;
 import ru.practicum.shareit.users.User;
 import ru.practicum.shareit.users.UserStorageInMemory;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Service
@@ -18,18 +20,21 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserStorageInMemory userStorageInMemory;
     private final ItemStorageInMemory itemStorageInMemory;
     private final BookingStorageInMemory bookingStorageInMemory;
+    private final StatusStorageInMemory statusStorageInMemory;
 
     @Autowired
     public ReviewServiceImpl(ReviewStorageInMemory reviewStorageInMemory,
                              ReviewStorageDb reviewStorageDb,
                              UserStorageInMemory userStorageInMemory,
                              ItemStorageInMemory itemStorageInMemory,
-                             BookingStorageInMemory bookingStorageInMemory) {
+                             BookingStorageInMemory bookingStorageInMemory,
+                             StatusStorageInMemory statusStorageInMemory) {
         this.reviewStorageInMemory = reviewStorageInMemory;
         this.reviewStorageDb = reviewStorageDb;
         this.userStorageInMemory = userStorageInMemory;
         this.itemStorageInMemory = itemStorageInMemory;
         this.bookingStorageInMemory = bookingStorageInMemory;
+        this.statusStorageInMemory = statusStorageInMemory;
     }
 
     //=================================================== CRUD =======================================================
@@ -100,5 +105,21 @@ public class ReviewServiceImpl implements ReviewService {
             }
         }
         return null;
+    }
+
+    public void addComment(Long itemId, Long userId, Review review) {
+        for (Booking booking : bookingStorageInMemory.getAllBookings()) {
+            if (booking.getItem() == itemId &&
+                booking.getBooker() == userId &&
+                booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                booking.getEnd().isBefore(LocalDateTime.now())) {
+
+                review.setItem(itemId);
+                review.setReviewer(userId);
+                Review reviewInDb = reviewStorageDb.createReview(review);
+                reviewStorageInMemory.createReview(reviewInDb);
+                break;
+            }
+        }
     }
 }

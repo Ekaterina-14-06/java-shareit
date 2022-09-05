@@ -8,11 +8,13 @@ import ru.practicum.shareit.users.User;
 import java.util.Set;
 
 public interface BookingService {
-    Booking createBooking(Booking booking);
+    Booking createBooking(Booking booking, Long userId);
 
-    Booking updateBooking(Booking booking);
+    Booking updateBooking(Booking booking, Long userId);
 
-    Booking getBookingById(Long id);
+    void changeStatus (Long bookingId, Boolean approved, Long statusId, Long userId);
+
+    Booking getBookingById(Long id, Long userId);
 
     Set<Booking> getAllBookings();
 
@@ -27,4 +29,8 @@ public interface BookingService {
     Status getStatusOfBooking(Long id);
 
     Review getReviewOfBooking(Long id);
+
+    Set<Booking> getBookingsOfUser(String state, Long userId);
+
+    Set<Booking> getBookingsOfOwner(String state, Long userId);
 }

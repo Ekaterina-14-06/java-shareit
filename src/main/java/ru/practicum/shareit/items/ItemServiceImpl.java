@@ -1,5 +1,6 @@
 package ru.practicum.shareit.items;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.reviews.ReviewStorageInMemory;
 import ru.practicum.shareit.users.User;
 import ru.practicum.shareit.users.UserStorageInMemory;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -158,4 +160,37 @@ public class ItemServiceImpl implements ItemService {
         }
         return items;
     }
+
+    public Set<ItemOfOwner> getItemsOfOwner(Long userId) {
+        Set<ItemOfOwner> items = new HashSet<>();
+        for (Item item : getAllItems()) {
+            if (item.getOwner() == userId) {
+                ItemOfOwner itemOfOwner = new ItemOfOwner();
+                itemOfOwner.setItem(item);
+                itemOfOwner.setLast(LocalDateTime.now());
+                itemOfOwner.setNext(LocalDateTime.now());
+
+                for (Booking booking : bookingStorageInMemory.getAllBookings()) {
+                    if (booking.getItem() == item.getId()) {
+                        if (booking.getEnd().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(itemOfOwner.getLast())) {
+                            itemOfOwner.setLast(booking.getEnd());
+                        }
+
+                        if (booking.getStart().isAfter(LocalDateTime.now()) && booking.getStart().isBefore(itemOfOwner.getNext())) {
+                            itemOfOwner.setNext(booking.getStart());
+                        }
+                    }
+                }
+                items.add(itemOfOwner);
+            }
+        }
+        return items;
+    }
+}
+
+@Data
+class ItemOfOwner {
+    private Item item;
+    private LocalDateTime last;
+    private LocalDateTime next;
 }

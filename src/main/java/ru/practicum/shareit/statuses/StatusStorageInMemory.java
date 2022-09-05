@@ -61,6 +61,22 @@ public class StatusStorageInMemory implements StatusStorage {
         return null;
     }
 
+    public Long getStatusIdByName (String name) {
+        try {
+            for (Status status : statuses) {
+                if (status.getName().equals(name)) {
+                    return status.getId();
+                }
+            }
+
+            log.error("Попытка получения данных несуществующего статуса (нет совпадений по имени ).");
+            throw new ValidationException("Статуса с таким именем не существует.");
+        } catch (ValidationException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     @Override
     public Set<Status> getAllStatuses() {
         return statuses;

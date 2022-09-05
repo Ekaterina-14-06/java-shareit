@@ -77,4 +77,8 @@ public class BookingStorageDb implements BookingStorage {
     public void removeAllBookings() {
         jdbcTemplate.update("DELETE * FROM bookings");
     }
+
+    public void changeStatus (Long bookingId, Long statusId) {
+        jdbcTemplate.update("UPDATE bookings SET status = ? WHERE id = ?", statusId, bookingId);
+    }
 }

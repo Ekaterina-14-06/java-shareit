@@ -90,4 +90,26 @@ public class BookingStorageInMemory implements BookingStorage {
     public void removeAllBookings() {
         bookings.clear();
     }
+
+    public void changeStatus (Long bookingId, Long statusId) {
+        try {
+            boolean isPresent = false;
+            for (Booking bookingInBookings : bookings) {
+                if (bookingInBookings.getId() == bookingId) {
+                    isPresent = true;
+                    bookingInBookings.setStatus(statusId);
+                    log.info("Обновлен статус");
+                    break;
+                }
+            }
+
+            if (!isPresent) {
+                log.error("Попытка изменить статус несуществующего бронирования (нет совпадений по id {}).", bookingId);
+                throw new ValidationException("Бронирования с таким id не существует (некого обновлять). " +
+                        "Запись о бронировании не была обновлена.");
+            }
+        } catch (ValidationException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
