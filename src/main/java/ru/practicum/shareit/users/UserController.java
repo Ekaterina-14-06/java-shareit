@@ -14,10 +14,13 @@ import java.util.Set;
 @RequestMapping(path = "/users")
 public class UserController {
     private final UserServiceImpl userServiceImpl;
+    private final UserServiceDto userServiceDto;
 
     @Autowired
-    public UserController(UserServiceImpl userServiceImpl) {
+    public UserController(UserServiceImpl userServiceImpl,
+                          UserServiceDto userServiceDto) {
         this.userServiceImpl = userServiceImpl;
+        this.userServiceDto = userServiceDto;
     }
 
     @PostMapping()
@@ -41,13 +44,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") Long id) {
-        return userServiceImpl.getUserById(id);
+    public UserDto getUserById(@PathVariable("id") Long id) {
+        return userServiceDto.getUserById(id);
     }
 
     @GetMapping()
-    public Set<User> getAllUsers() {
-        return userServiceImpl.getAllUsers();
+    public Set<UserDto> getAllUserDtos() {
+        return userServiceDto.getAllUserDtos();
     }
 
     @GetMapping("/{id}/items")

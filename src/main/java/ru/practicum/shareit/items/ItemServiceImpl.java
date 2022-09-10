@@ -43,8 +43,6 @@ public class ItemServiceImpl implements ItemService {
         this.bookingStorageInMemory = bookingStorageInMemory;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public Item createItem(Item item) {
         Item itemInDb = itemStorageDb.createItem(item);
@@ -91,12 +89,10 @@ public class ItemServiceImpl implements ItemService {
         itemStorageDb.removeAllItems();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public User getUserOfItem(Long id) {
         for (User user : userStorageInMemory.getAllUsers()) {
-            if (user.getId() == getItemById(id).getOwner()) {
+            if (user.getUserId() == getItemById(id).getUserId()) {
                 return user;
             }
         }
@@ -107,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
     public Set<Review> getReviewsOfItem(Long id) {
         Set<Review> reviewsOfItem = new HashSet<>();
         for (Review review : reviewStorageInMemory.getAllReviews()) {
-            if (review.getItem() == id) {
+            if (review.getItemId() == id) {
                 reviewsOfItem.add(review);
             }
         }
@@ -117,7 +113,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemRequest getItemRequestOfItem(Long id) {
         for (ItemRequest itemRequest : itemRequestStorageInMemory.getAllItemRequests()) {
-            if (itemRequest.getId() == getItemById(id).getRequest()) {
+            if (itemRequest.getItemRequestId() == getItemById(id).getRequestId()) {
                 return itemRequest;
             }
         }
@@ -128,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
     public Set<Booking> getBookingsOfItem(Long id) {
         Set<Booking> bookingsOfItem = new HashSet<>();
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getItem() == id) {
+            if (booking.getItemId() == id) {
                 bookingsOfItem.add(booking);
             }
         }
@@ -139,7 +135,7 @@ public class ItemServiceImpl implements ItemService {
                                Long userId,
                                Item item) {
         try {
-            if (getItemById(itemId).getOwner() == userId) {
+            if (getItemById(itemId).getUserId() == userId) {
                 updateItem(item);
             } else {
                 log.error("Попытка изменения значений полей вещи не её владельцем.");
@@ -164,14 +160,14 @@ public class ItemServiceImpl implements ItemService {
     public Set<ItemOfOwner> getItemsOfOwner(Long userId) {
         Set<ItemOfOwner> items = new HashSet<>();
         for (Item item : getAllItems()) {
-            if (item.getOwner() == userId) {
+            if (item.getUserId() == userId) {
                 ItemOfOwner itemOfOwner = new ItemOfOwner();
                 itemOfOwner.setItem(item);
                 itemOfOwner.setLast(LocalDateTime.now());
                 itemOfOwner.setNext(LocalDateTime.now());
 
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getItem() == item.getId()) {
+                    if (booking.getItemId() == item.getItemId()) {
                         if (booking.getEnd().isBefore(LocalDateTime.now()) && booking.getEnd().isAfter(itemOfOwner.getLast())) {
                             itemOfOwner.setLast(booking.getEnd());
                         }

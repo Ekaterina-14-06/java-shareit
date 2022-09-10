@@ -23,8 +23,6 @@ public class StatusServiceImpl implements StatusService {
         this.bookingStorageInMemory = bookingStorageInMemory;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public Status createStatus(Status status) {
         Status statusInDb = statusStorageDb.createStatus(status);
@@ -61,13 +59,11 @@ public class StatusServiceImpl implements StatusService {
         statusStorageDb.removeAllStatuses();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public Set<Booking> getBookingsOfStatus(Long id) {
         Set<Booking> bookingsOfStatus = new HashSet<>();
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getStatus() == id) {
+            if (booking.getStatusId() == id) {
                 bookingsOfStatus.add(booking);
             }
         }
@@ -77,7 +73,7 @@ public class StatusServiceImpl implements StatusService {
     @Override
     public void removeBookingsOfStatus(Long id) {
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getStatus() == id) {
+            if (booking.getStatusId() == id) {
                 bookingStorageInMemory.getAllBookings().remove(booking);
             }
         }

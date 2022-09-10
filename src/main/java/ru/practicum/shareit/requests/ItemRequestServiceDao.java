@@ -27,8 +27,6 @@ public class ItemRequestServiceDao implements ItemRequestService {
         this.itemStorageInMemory = itemStorageInMemory;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public ItemRequest createItemRequest(ItemRequest itemRequest) {
         ItemRequest itemRequestInDb = itemRequestStorageDb.createItemRequest(itemRequest);
@@ -65,15 +63,13 @@ public class ItemRequestServiceDao implements ItemRequestService {
         itemRequestStorageDb.removeAllItemRequests();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public User getUserOfItemRequest(Long id) {
         SqlRowSet userRows = itemRequestStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM users WHERE id = ?", getItemRequestById(id).getRequestor());
+                "SELECT * FROM users WHERE user_id = ?", getItemRequestById(id).getUserId());
         if (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getLong("id"));
+            user.setUserId(userRows.getLong("user_id"));
             user.setName(userRows.getString("name"));
             user.setEmail(userRows.getString("email"));
             return user;
@@ -85,15 +81,15 @@ public class ItemRequestServiceDao implements ItemRequestService {
     public Set<Item> getItemsOfItemRequest(Long id) {
         Set<Item> items = new HashSet<>();
         SqlRowSet itemRows = itemRequestStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM items WHERE request = ?", getItemRequestById(id).getId());
+                "SELECT * FROM items WHERE request_id = ?", getItemRequestById(id).getItemRequestId());
         while (itemRows.next()) {
             Item item = new Item();
-            item.setId(itemRows.getLong("id"));
+            item.setItemId(itemRows.getLong("item_id"));
             item.setName(itemRows.getString("name"));
             item.setDescription(itemRows.getString("description"));
-            item.setOwner(itemRows.getLong("owner"));
+            item.setUserId(itemRows.getLong("user_id"));
             item.setAvailable(itemRows.getBoolean("available"));
-            item.setRequest(itemRows.getLong("request"));
+            item.setRequestId(itemRows.getLong("request_id"));
             items.add(item);
         }
         return items;

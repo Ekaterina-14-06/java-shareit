@@ -21,29 +21,29 @@ public class ItemStorageDb implements ItemStorage {
 
     @Override
     public Item createItem(Item item) {
-        jdbcTemplate.update("INSERT INTO items (name, description, owner, available, request) VALUES (?, ?, ?, ?, ?)",
-                item.getName(), item.getDescription(), item.getOwner(), item.getAvailable(), item.getRequest());
+        jdbcTemplate.update("INSERT INTO items (name, description, user_id, available, request_id) VALUES (?, ?, ?, ?, ?)",
+                item.getName(), item.getDescription(), item.getUserId(), item.getAvailable(), item.getRequestId());
         return item;
     }
 
     @Override
     public Item updateItem(Item item) {
-        jdbcTemplate.update("UPDATE items SET name = ?, description = ?, owner = ?, available = ?, request = ? WHERE id = ?",
-                item.getName(), item.getDescription(), item.getOwner(), item.getAvailable(), item.getRequest(), item.getId());
+        jdbcTemplate.update("UPDATE items SET name = ?, description = ?, user_id = ?, available = ?, request_id = ? WHERE item_id = ?",
+                item.getName(), item.getDescription(), item.getUserId(), item.getAvailable(), item.getRequestId(), item.getItemId());
         return item;
     }
 
     @Override
     public Item getItemById(Long id) {
-        SqlRowSet itemRows = jdbcTemplate.queryForRowSet("SELECT * FROM items WHERE id = ?", id);
+        SqlRowSet itemRows = jdbcTemplate.queryForRowSet("SELECT * FROM items WHERE item_id = ?", id);
         if (itemRows.next()) {
             Item item = new Item();
-            item.setId(id);
+            item.setItemId(id);
             item.setName(itemRows.getString("name"));
             item.setDescription(itemRows.getString("description"));
-            item.setOwner(itemRows.getLong("owner"));
+            item.setUserId(itemRows.getLong("user_id"));
             item.setAvailable(itemRows.getBoolean("available"));
-            item.setRequest(itemRows.getLong("request"));
+            item.setRequestId(itemRows.getLong("request_id"));
             return item;
         } else {
             return null;
@@ -58,9 +58,9 @@ public class ItemStorageDb implements ItemStorage {
             Item item = new Item();
             item.setName(itemRows.getString("name"));
             item.setDescription(itemRows.getString("description"));
-            item.setOwner(itemRows.getLong("owner"));
+            item.setUserId(itemRows.getLong("user_id"));
             item.setAvailable(itemRows.getBoolean("available"));
-            item.setRequest(itemRows.getLong("request"));
+            item.setRequestId(itemRows.getLong("request_id"));
             items.add(item);
         }
         return items;
@@ -68,7 +68,7 @@ public class ItemStorageDb implements ItemStorage {
 
     @Override
     public void removeItemById(Long id) {
-        jdbcTemplate.update("DELETE * FROM items WHERE id = ?", id);
+        jdbcTemplate.update("DELETE * FROM items WHERE item_id = ?", id);
     }
 
     @Override

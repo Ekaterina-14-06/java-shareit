@@ -8,14 +8,14 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "items", schema = "public")
+@Table(name = "bookings", schema = "public")
 @Data
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotBlank
     @UniqueElements
-    private Long id;
+    private Long bookingId;
 
     @Column(name = "start")
     private LocalDateTime start;
@@ -23,17 +23,17 @@ public class Booking {
     @Column(name = "end")
     private LocalDateTime end;
 
-    @Column(name = "item")
+    @Column(name = "item_id")
     @NotBlank
-    private Long item;
+    private Long itemId;
 
-    @Column(name = "booker")
+    @Column(name = "user_id")
     @NotBlank
-    private Long booker;
+    private Long userId;
 
-    @Column(name = "status")
+    @Column(name = "status_id")
     @NotBlank
-    private Long status;
+    private Long statusId;
 }
 
 

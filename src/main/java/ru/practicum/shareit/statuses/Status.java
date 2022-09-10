@@ -14,7 +14,7 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotBlank
     @UniqueElements
-    private Long id;
+    private Long statusId;
 
     @Column(name = "name")
     @NotBlank

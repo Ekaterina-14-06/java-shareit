@@ -3,7 +3,6 @@ package ru.practicum.shareit.requests;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.reviews.Review;
 
 import java.time.ZoneId;
 import java.util.HashSet;
@@ -23,26 +22,26 @@ public class ItemRequestStorageDb implements ItemRequestStorage {
 
     @Override
     public ItemRequest createItemRequest(ItemRequest itemRequest) {
-        jdbcTemplate.update("INSERT INTO item_requests (description, requestor, created VALUES (?, ?, ?)",
-                itemRequest.getDescription(), itemRequest.getRequestor(), itemRequest.getCreated());
+        jdbcTemplate.update("INSERT INTO item_requests (description, user_id, created VALUES (?, ?, ?)",
+                itemRequest.getDescription(), itemRequest.getUserId(), itemRequest.getCreated());
         return itemRequest;
     }
 
     @Override
     public ItemRequest updateItemRequest(ItemRequest itemRequest) {
-        jdbcTemplate.update("UPDATE item_requests SET description = ?, requestor = ?, created = ?",
-                itemRequest.getDescription(), itemRequest.getRequestor(), itemRequest.getCreated());
+        jdbcTemplate.update("UPDATE item_requests SET description = ?, user_id = ?, created = ?",
+                itemRequest.getDescription(), itemRequest.getUserId(), itemRequest.getCreated());
         return itemRequest;
     }
 
     @Override
     public ItemRequest getItemRequestById(Long id) {
-        SqlRowSet itemRequestRows = jdbcTemplate.queryForRowSet("SELECT * FROM item_requests WHERE id = ?", id);
+        SqlRowSet itemRequestRows = jdbcTemplate.queryForRowSet("SELECT * FROM item_requests WHERE item_request_id = ?", id);
         if (itemRequestRows.next()) {
             ItemRequest itemRequest = new ItemRequest();
-            itemRequest.setId(id);
+            itemRequest.setItemRequestId(id);
             itemRequest.setDescription(itemRequestRows.getString("description"));
-            itemRequest.setRequestor(itemRequestRows.getLong("requestor"));
+            itemRequest.setUserId(itemRequestRows.getLong("user_id"));
             itemRequest.setCreated(itemRequestRows.getDate("created")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             return itemRequest;
@@ -57,9 +56,9 @@ public class ItemRequestStorageDb implements ItemRequestStorage {
         SqlRowSet itemRequestRows = jdbcTemplate.queryForRowSet("SELECT * FROM item_requests");
         while (itemRequestRows.next()) {
             ItemRequest itemRequest = new ItemRequest();
-            itemRequest.setId(itemRequestRows.getLong("id"));
+            itemRequest.setItemRequestId(itemRequestRows.getLong("item_request_id"));
             itemRequest.setDescription(itemRequestRows.getString("description"));
-            itemRequest.setRequestor(itemRequestRows.getLong("requestor"));
+            itemRequest.setUserId(itemRequestRows.getLong("user_id"));
             itemRequest.setCreated((itemRequestRows.getDate("created"))
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             itemRequests.add(itemRequest);
@@ -69,7 +68,7 @@ public class ItemRequestStorageDb implements ItemRequestStorage {
 
     @Override
     public void removeItemRequestById(Long id) {
-        jdbcTemplate.update("DELETE * FROM item_requests WHERE id = ?", id);
+        jdbcTemplate.update("DELETE * FROM item_requests WHERE item_request_id = ?", id);
     }
 
     @Override

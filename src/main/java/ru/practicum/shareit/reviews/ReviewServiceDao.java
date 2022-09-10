@@ -22,8 +22,6 @@ public class ReviewServiceDao implements ReviewService {
         this.reviewStorageDb = reviewStorageDb;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public Review createReview(Review review) {
         Review reviewInDb = reviewStorageDb.createReview(review);
@@ -60,15 +58,13 @@ public class ReviewServiceDao implements ReviewService {
         reviewStorageDb.removeAllReviews();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public User getUserOfReview(Long id) {
         SqlRowSet userRows = reviewStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM users WHERE id = ?", getReviewById(id).getReviewer());
+                "SELECT * FROM users WHERE user_id = ?", getReviewById(id).getUserId());
         if (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getLong("id"));
+            user.setUserId(userRows.getLong("user_id"));
             user.setName(userRows.getString("name"));
             user.setEmail(userRows.getString("email"));
             return user;
@@ -79,15 +75,15 @@ public class ReviewServiceDao implements ReviewService {
     @Override
     public Item getItemOfReview(Long id) {
         SqlRowSet itemRows = reviewStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM items WHERE id = ?", getReviewById(id).getItem());
+                "SELECT * FROM items WHERE item_id = ?", getReviewById(id).getItemId());
         if (itemRows.next()) {
             Item item = new Item();
-            item.setId(itemRows.getLong("id"));
+            item.setItemId(itemRows.getLong("item_id"));
             item.setName(itemRows.getString("name"));
             item.setDescription(itemRows.getString("description"));
-            item.setOwner(itemRows.getLong("owner"));
+            item.setUserId(itemRows.getLong("user_id"));
             item.setAvailable(itemRows.getBoolean("available"));
-            item.setRequest(itemRows.getLong("request"));
+            item.setRequestId(itemRows.getLong("request_id"));
             return item;
         }
         return null;
@@ -96,17 +92,17 @@ public class ReviewServiceDao implements ReviewService {
     @Override
     public Booking getBookingOfReview(Long id) {
         SqlRowSet bookingRows = reviewStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM bookings WHERE id = ?", getReviewById(id).getBooking());
+                "SELECT * FROM bookings WHERE booking_id = ?", getReviewById(id).getBookingId());
         if (bookingRows.next()) {
             Booking booking = new Booking();
-            booking.setId(bookingRows.getLong("id"));
+            booking.setBookingId(bookingRows.getLong("booking_id"));
             booking.setStart(bookingRows.getDate("start")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             booking.setEnd(bookingRows.getDate("end")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-            booking.setItem(bookingRows.getLong("item"));
-            booking.setBooker(bookingRows.getLong("booker"));
-            booking.setStatus(bookingRows.getLong("status"));
+            booking.setItemId(bookingRows.getLong("item_id"));
+            booking.setUserId(bookingRows.getLong("user_id"));
+            booking.setStatusId(bookingRows.getLong("status_id"));
             return booking;
         }
         return null;

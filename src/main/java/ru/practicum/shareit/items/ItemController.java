@@ -6,8 +6,8 @@ import ru.practicum.shareit.bookings.Booking;
 import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.reviews.Review;
 import ru.practicum.shareit.reviews.ReviewServiceImpl;
-import ru.practicum.shareit.reviews.ReviewStorageInMemory;
 import ru.practicum.shareit.users.User;
+import ru.practicum.shareit.users.UserDto;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -17,12 +17,15 @@ import java.util.Set;
 public class ItemController {
     private final ItemServiceImpl itemServiceImpl;
     private final ReviewServiceImpl reviewServiceImpl;
+    private final ItemServiceDto itemServiceDto;
 
     @Autowired
     public ItemController(ItemServiceImpl itemServiceImpl,
-                          ReviewServiceImpl reviewServiceImpl) {
+                          ReviewServiceImpl reviewServiceImpl,
+                          ItemServiceDto itemServiceDto) {
         this.itemServiceImpl = itemServiceImpl;
         this.reviewServiceImpl = reviewServiceImpl;
+        this.itemServiceDto = itemServiceDto;
     }
 
     @PostMapping()
@@ -53,25 +56,18 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public Item getItemById(@PathVariable("id") Long id) {
-        return itemServiceImpl.getItemById(id);
+    public ItemDto getItemById(@PathVariable("id") Long id) {
+        return itemServiceDto.getItemById(id);
     }
-
-    /*
-    @GetMapping()
-    public Set<Item> getAvailableItems() {
-        return itemServiceImpl.getAvailableItems();
-    }
-    */
 
     @GetMapping()
     public Set<ItemOfOwner> getItemsOfOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemServiceImpl.getItemsOfOwner(userId);
     }
 
-    @GetMapping("/{id}/users")
-    public User getUserOfItem(@PathVariable("id") Long id) {
-        return itemServiceImpl.getUserOfItem(id);
+    @GetMapping("/{id}/user")
+    public UserDto getUserOfItem(@PathVariable("id") Long id) {
+        return itemServiceDto.getUserOfItem(id);
     }
 
     @GetMapping("/{id}/reviews")
@@ -79,7 +75,7 @@ public class ItemController {
         return itemServiceImpl.getReviewsOfItem(id);
     }
 
-    @GetMapping("/{id}/itemRequests")
+    @GetMapping("/{id}/itemRequest")
     public ItemRequest getItemRequestOfItem(@PathVariable("id") Long id) {
         return itemServiceImpl.getItemRequestOfItem(id);
     }

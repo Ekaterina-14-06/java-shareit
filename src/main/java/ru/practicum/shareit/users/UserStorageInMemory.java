@@ -11,7 +11,7 @@ import java.util.Set;
 @Component
 public class UserStorageInMemory implements UserStorage {
     private final Set<User> users = new HashSet<>();
-
+    private final Set<UserDto> userDtos = new HashSet<>();
 
     @Override
     public User createUser(User user) {
@@ -25,7 +25,7 @@ public class UserStorageInMemory implements UserStorage {
         try {
             boolean isPresent = false;
             for (User userInUsers : users) {
-                if (userInUsers.getId() == user.getId()) {
+                if (userInUsers.getUserId() == user.getUserId()) {
                     isPresent = true;
                     userInUsers.setName(user.getName());
                     userInUsers.setEmail(user.getEmail());
@@ -35,7 +35,8 @@ public class UserStorageInMemory implements UserStorage {
             }
 
             if (!isPresent) {
-                log.error("Попытка изменить свойства несуществующего пользователя (нет совпадений по id {}).", user.getId());
+                log.error("Попытка изменить свойства несуществующего пользователя (нет совпадений по id {}).",
+                        user.getUserId());
                 throw new ValidationException("Пользователя с таким id не существует (некого обновлять). " +
                         "Запись о пользователе не была обновлена.");
             }
@@ -49,7 +50,7 @@ public class UserStorageInMemory implements UserStorage {
     public User getUserById(Long id) {
         try {
             for (User user : users) {
-                if (user.getId() == id) {
+                if (user.getUserId() == id) {
                     return user;
                 }
             }
@@ -71,7 +72,7 @@ public class UserStorageInMemory implements UserStorage {
     public void removeUserById(Long id) {
         try {
             for (User user : users) {
-                if (user.getId() == id) {
+                if (user.getUserId() == id) {
                     users.remove(user);
                     break;
                 }
@@ -88,5 +89,9 @@ public class UserStorageInMemory implements UserStorage {
     @Override
     public void removeAllUsers() {
         users.clear();
+    }
+
+    public Set<UserDto> getAllUserDtos() {
+        return userDtos;
     }
 }

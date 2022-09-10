@@ -21,8 +21,6 @@ public class StatusServiceDao implements StatusService {
         this.statusStorageDb = statusStorageDb;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public Status createStatus(Status status) {
         Status statusInDb = statusStorageDb.createStatus(status);
@@ -59,23 +57,21 @@ public class StatusServiceDao implements StatusService {
         statusStorageDb.removeAllStatuses();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public Set<Booking> getBookingsOfStatus(Long id) {
         Set<Booking> bookings = new HashSet<>();
         SqlRowSet bookingRows = statusStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM bookings WHERE status = ?", id);
+                "SELECT * FROM bookings WHERE status_id = ?", id);
         while (bookingRows.next()) {
             Booking booking = new Booking();
-            booking.setId(bookingRows.getLong("id"));
+            booking.setBookingId(bookingRows.getLong("booking_id"));
             booking.setStart(bookingRows.getDate("start")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             booking.setEnd(bookingRows.getDate("end")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-            booking.setItem(bookingRows.getLong("item"));
-            booking.setBooker(bookingRows.getLong("booker"));
-            booking.setStatus(id);
+            booking.setItemId(bookingRows.getLong("item_id"));
+            booking.setUserId(bookingRows.getLong("user_id"));
+            booking.setStatusId(id);
             bookings.add(booking);
         }
         return bookings;
@@ -83,6 +79,6 @@ public class StatusServiceDao implements StatusService {
 
     @Override
     public void removeBookingsOfStatus(Long id) {
-        statusStorageDb.getJdbcTemplate().update("DELETE * FROM bookings WHERE status = ?", id);
+        statusStorageDb.getJdbcTemplate().update("DELETE * FROM bookings WHERE status_id = ?", id);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -22,29 +23,34 @@ public class BookingStorageDb implements BookingStorage {
 
     @Override
     public Booking createBooking(Booking booking) {
-        jdbcTemplate.update("INSERT INTO bookings (start, end, item, booker, status) VALUES (?, ?, ?, ?, ?)",
-                booking.getStart(), booking.getEnd(), booking.getItem(), booking.getBooker(), booking.getStatus());
+        jdbcTemplate.update("INSERT INTO bookings (start, end, item_id, user_id, status_id) VALUES (?, ?, ?, ?, ?)",
+                booking.getStart(), booking.getEnd(), booking.getItemId(), booking.getUserId(), booking.getStatusId());
         return booking;
     }
 
     @Override
     public Booking updateBooking(Booking booking) {
-        jdbcTemplate.update("UPDATE bookings SET start = ?, end = ?, item = ?, booker = ?, status = ? WHERE id = ?",
-                booking.getStart(), booking.getEnd(), booking.getItem(), booking.getBooker(), booking.getStatus(), booking.getId());
+        jdbcTemplate.update("UPDATE bookings SET start = ?, end = ?, item_id = ?, user_id = ?, status_id = ? WHERE booking_id = ?",
+                booking.getStart(),
+                booking.getEnd(),
+                booking.getItemId(),
+                booking.getUserId(),
+                booking.getStatusId(),
+                booking.getBookingId());
         return booking;
     }
 
     @Override
     public Booking getBookingById(Long id) {
-        SqlRowSet bookingRows = jdbcTemplate.queryForRowSet("SELECT * FROM bookings WHERE id = ?", id);
+        SqlRowSet bookingRows = jdbcTemplate.queryForRowSet("SELECT * FROM bookings WHERE booking_id = ?", id);
         if (bookingRows.next()) {
             Booking booking = new Booking();
-            booking.setId(id);
+            booking.setBookingId(id);
             booking.setStart(bookingRows.getDate("start").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             booking.setEnd(bookingRows.getDate("end").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-            booking.setItem(bookingRows.getLong("item"));
-            booking.setBooker(bookingRows.getLong("booker"));
-            booking.setStatus(bookingRows.getLong("status"));
+            booking.setItemId(bookingRows.getLong("item_id"));
+            booking.setUserId(bookingRows.getLong("user_id"));
+            booking.setStatusId(bookingRows.getLong("status_id"));
             return booking;
         } else {
             return null;
@@ -57,12 +63,12 @@ public class BookingStorageDb implements BookingStorage {
         SqlRowSet bookingRows = jdbcTemplate.queryForRowSet("SELECT * FROM bookings");
         while (bookingRows.next()) {
             Booking booking = new Booking();
-            booking.setId(bookingRows.getLong("id"));
+            booking.setBookingId(bookingRows.getLong("booking_id"));
             booking.setStart(bookingRows.getDate("start").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             booking.setEnd(bookingRows.getDate("end").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-            booking.setItem(bookingRows.getLong("item"));
-            booking.setBooker(bookingRows.getLong("booker"));
-            booking.setStatus(bookingRows.getLong("status"));
+            booking.setItemId(bookingRows.getLong("item_id"));
+            booking.setUserId(bookingRows.getLong("user_id"));
+            booking.setStatusId(bookingRows.getLong("status_id"));
             bookings.add(booking);
         }
         return bookings;
@@ -70,7 +76,7 @@ public class BookingStorageDb implements BookingStorage {
 
     @Override
     public void removeBookingById(Long id) {
-        jdbcTemplate.update("DELETE * FROM bookings WHERE id = ?", id);
+        jdbcTemplate.update("DELETE * FROM bookings WHERE booking_id = ?", id);
     }
 
     @Override
@@ -79,6 +85,6 @@ public class BookingStorageDb implements BookingStorage {
     }
 
     public void changeStatus (Long bookingId, Long statusId) {
-        jdbcTemplate.update("UPDATE bookings SET status = ? WHERE id = ?", statusId, bookingId);
+        jdbcTemplate.update("UPDATE bookings SET status_id = ? WHERE booking_id = ?", statusId, bookingId);
     }
 }

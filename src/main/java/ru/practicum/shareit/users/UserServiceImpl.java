@@ -38,8 +38,6 @@ public class UserServiceImpl implements UserService {
         this.reviewStorageInMemory = reviewStorageInMemory;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public User createUser(User user) {
         User userInDb = userStorageDb.createUser(user);
@@ -76,13 +74,11 @@ public class UserServiceImpl implements UserService {
         userStorageDb.removeAllUsers();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public Set<Item> getItemsOfUser(Long id) {
         Set<Item> itemsOfUser = new HashSet<>();
         for (Item item : itemStorageInMemory.getAllItems()) {
-            if (item.getOwner() == id) {
+            if (item.getUserId() == id) {
                 itemsOfUser.add(item);
             }
         }
@@ -92,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeItemsOfUser(Long id) {
         for (Item item : itemStorageInMemory.getAllItems()) {
-            if (item.getOwner() == id) {
+            if (item.getUserId() == id) {
                 itemStorageInMemory.getAllItems().remove(item);
             }
         }
@@ -102,7 +98,7 @@ public class UserServiceImpl implements UserService {
     public Set<ItemRequest> getItemRequestsOfUser(Long id) {
         Set<ItemRequest> itemRequestsOfUser = new HashSet<>();
         for (ItemRequest itemRequest : itemRequestStorageInMemory.getAllItemRequests()) {
-            if (itemRequest.getRequestor() == id) {
+            if (itemRequest.getUserId() == id) {
                 itemRequestsOfUser.add(itemRequest);
             }
         }
@@ -112,7 +108,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeItemRequestsOfUser(Long id) {
         for (ItemRequest itemRequest : itemRequestStorageInMemory.getAllItemRequests()) {
-            if (itemRequest.getRequestor() == id) {
+            if (itemRequest.getUserId() == id) {
                 itemRequestStorageInMemory.getAllItemRequests().remove(itemRequest);
             }
         }
@@ -122,7 +118,7 @@ public class UserServiceImpl implements UserService {
     public Set<Booking> getBookingsOfUser(Long id) {
         Set<Booking> bookingsOfUser = new HashSet<>();
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getBooker() == id) {
+            if (booking.getUserId() == id) {
                 bookingsOfUser.add(booking);
             }
         }
@@ -132,7 +128,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeBookingsOfUser(Long id) {
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getBooker() == id) {
+            if (booking.getUserId() == id) {
                 bookingStorageInMemory.getAllBookings().remove(booking);
             }
         }
@@ -142,7 +138,7 @@ public class UserServiceImpl implements UserService {
     public Set<Review> getReviewsOfUser(Long id) {
         Set<Review> reviewsOfUser = new HashSet<>();
         for (Review review : reviewStorageInMemory.getAllReviews()) {
-            if (review.getReviewer() == id) {
+            if (review.getUserId() == id) {
                 reviewsOfUser.add(review);
             }
         }
@@ -152,7 +148,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeReviewsOfUser(Long id) {
         for (Review review : reviewStorageInMemory.getAllReviews()) {
-            if (review.getReviewer() == id) {
+            if (review.getUserId() == id) {
                 reviewStorageInMemory.getAllReviews().remove(review);
             }
         }

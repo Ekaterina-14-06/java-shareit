@@ -37,8 +37,6 @@ public class ReviewServiceImpl implements ReviewService {
         this.statusStorageInMemory = statusStorageInMemory;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public Review createReview(Review review) {
         Review reviewInDb = reviewStorageDb.createReview(review);
@@ -75,12 +73,10 @@ public class ReviewServiceImpl implements ReviewService {
         reviewStorageDb.removeAllReviews();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public User getUserOfReview(Long id) {
         for (User user : userStorageInMemory.getAllUsers()) {
-            if (user.getId() == getReviewById(id).getReviewer()) {
+            if (user.getUserId() == getReviewById(id).getUserId()) {
                 return user;
             }
         }
@@ -90,7 +86,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Item getItemOfReview(Long id) {
         for (Item item : itemStorageInMemory.getAllItems()) {
-            if (item.getId() == getReviewById(id).getItem()) {
+            if (item.getItemId() == getReviewById(id).getItemId()) {
                 return item;
             }
         }
@@ -100,7 +96,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Booking getBookingOfReview(Long id) {
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getId() == getReviewById(id).getBooking()) {
+            if (booking.getBookingId() == getReviewById(id).getBookingId()) {
                 return booking;
             }
         }
@@ -109,13 +105,13 @@ public class ReviewServiceImpl implements ReviewService {
 
     public void addComment(Long itemId, Long userId, Review review) {
         for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-            if (booking.getItem() == itemId &&
-                booking.getBooker() == userId &&
-                booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+            if (booking.getItemId() == itemId &&
+                booking.getUserId() == userId &&
+                booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                 booking.getEnd().isBefore(LocalDateTime.now())) {
 
-                review.setItem(itemId);
-                review.setReviewer(userId);
+                review.setItemId(itemId);
+                review.setUserId(userId);
                 Review reviewInDb = reviewStorageDb.createReview(review);
                 reviewStorageInMemory.createReview(reviewInDb);
                 break;

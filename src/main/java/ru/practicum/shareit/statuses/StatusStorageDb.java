@@ -28,17 +28,17 @@ public class StatusStorageDb implements StatusStorage {
 
     @Override
     public Status updateStatus(Status status) {
-        jdbcTemplate.update("UPDATE statuses SET name = ?, description = ? WHERE id = ?",
-                status.getName(), status.getDescription(), status.getId());
+        jdbcTemplate.update("UPDATE statuses SET name = ?, description = ? WHERE status_id = ?",
+                status.getName(), status.getDescription(), status.getStatusId());
         return status;
     }
 
     @Override
     public Status getStatusById(Long id) {
-        SqlRowSet statusRows = jdbcTemplate.queryForRowSet("SELECT * FROM statuses WHERE id = ?", id);
+        SqlRowSet statusRows = jdbcTemplate.queryForRowSet("SELECT * FROM statuses WHERE status_id = ?", id);
         if (statusRows.next()) {
             Status status = new Status();
-            status.setId(id);
+            status.setStatusId(id);
             status.setName(statusRows.getString("name"));
             status.setDescription(statusRows.getString("description"));
             return status;
@@ -53,7 +53,7 @@ public class StatusStorageDb implements StatusStorage {
         SqlRowSet statusRows = jdbcTemplate.queryForRowSet("SELECT * FROM statuses");
         while (statusRows.next()) {
             Status status = new Status();
-            status.setId(statusRows.getLong("id"));
+            status.setStatusId(statusRows.getLong("status_id"));
             status.setName(statusRows.getString("name"));
             status.setDescription(statusRows.getString("description"));
             statuses.add(status);
@@ -63,7 +63,7 @@ public class StatusStorageDb implements StatusStorage {
 
     @Override
     public void removeStatusById(Long id) {
-        jdbcTemplate.update("DELETE * FROM statuses WHERE id = ?", id);
+        jdbcTemplate.update("DELETE * FROM statuses WHERE status_id = ?", id);
     }
 
     @Override

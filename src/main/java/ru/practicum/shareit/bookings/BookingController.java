@@ -8,16 +8,20 @@ import ru.practicum.shareit.statuses.Status;
 import ru.practicum.shareit.users.User;
 
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingServiceImpl bookingServiceImpl;
+    private final BookingServiceDto bookingServiceDto;
 
     @Autowired
-    public BookingController(BookingServiceImpl bookingServiceImpl) {
+    public BookingController(BookingServiceImpl bookingServiceImpl,
+                             BookingServiceDto bookingServiceDto) {
         this.bookingServiceImpl = bookingServiceImpl;
+        this.bookingServiceDto = bookingServiceDto;
     }
 
     @PostMapping()
@@ -37,7 +41,7 @@ public class BookingController {
                               @RequestParam Boolean approved,
                               @RequestBody Booking booking,
                               @RequestHeader("X-Sharer-User-Id") Long userId) {
-        bookingServiceImpl.changeStatus(bookingId, approved, booking.getId(), userId);
+        bookingServiceImpl.changeStatus(bookingId, approved, booking.getBookingId(), userId);
     }
 
     @DeleteMapping("/{id}")
@@ -51,9 +55,9 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public Booking getBookingById(@PathVariable("bookingId") Long id,
-                                  @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return bookingServiceImpl.getBookingById(id, userId);
+    public Optional<BookingDto> getBookingById(@PathVariable("bookingId") Long id,
+                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return bookingServiceDto.getBookingById(id, userId);
     }
 
     @GetMapping()
@@ -69,27 +73,27 @@ public class BookingController {
     }
 
     @GetMapping()
-    public Set<Booking> getAllBookings() {
-        return bookingServiceImpl.getAllBookings();
+    public Set<BookingDto> getAllBookingDtos() {
+        return bookingServiceDto.getAllBookingDtos();
     }
 
     @GetMapping("/{id}/items")
-    public Item getItemOfBooking(@PathVariable("id") Long id) {
+    public Optional<Item> getItemOfBooking(@PathVariable("id") Long id) {
         return bookingServiceImpl.getItemOfBooking(id);
     }
 
     @GetMapping("/{id}/users")
-    public User getUserOfBooking(@PathVariable("id") Long id) {
+    public Optional<User> getUserOfBooking(@PathVariable("id") Long id) {
         return bookingServiceImpl.getUserOfBooking(id);
     }
 
     @GetMapping("/{id}/statuses")
-    public Status getStatusOfBooking(@PathVariable("id") Long id) {
+    public Optional<Status> getStatusOfBooking(@PathVariable("id") Long id) {
         return bookingServiceImpl.getStatusOfBooking(id);
     }
 
     @GetMapping("/{id}/reviews")
-    public Review getReviewOfBooking(@PathVariable("id") Long id) {
+    public Optional<Review> getReviewOfBooking(@PathVariable("id") Long id) {
         return bookingServiceImpl.getReviewOfBooking(id);
     }
 }

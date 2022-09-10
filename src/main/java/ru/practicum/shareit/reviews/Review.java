@@ -10,28 +10,28 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reviews", schema = "public")
 @Data
-public class Review {  // class Comment
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotBlank
     @UniqueElements
-    private Long id;
+    private Long reviewId;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "item")
-    private Long item;
+    @Column(name = "item_id")
+    private Long itemId;
 
-    @Column(name = "reviewer")
-    private Long reviewer;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "review_date")
     private LocalDateTime date;
 
     @Column(name = "evaluation")
-    private Boolean evaluation; // отзыв-комментарий: положительный (true) или отрицательный (false)
+    private Boolean evaluation;
 
-    @Column(name = "booking")
-    private Long booking;
+    @Column(name = "booking_id")
+    private Long bookingId;
 }

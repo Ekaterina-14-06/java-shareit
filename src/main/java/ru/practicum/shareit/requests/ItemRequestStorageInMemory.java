@@ -3,7 +3,6 @@ package ru.practicum.shareit.requests;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.reviews.Review;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,10 +24,10 @@ public class ItemRequestStorageInMemory implements ItemRequestStorage {
         try {
             boolean isPresent = false;
             for (ItemRequest itemRequestInItemRequests : itemRequests) {
-                if (itemRequestInItemRequests.getId() == itemRequest.getId()) {
+                if (itemRequestInItemRequests.getItemRequestId() == itemRequest.getItemRequestId()) {
                     isPresent = true;
                     itemRequestInItemRequests.setDescription(itemRequest.getDescription());
-                    itemRequestInItemRequests.setRequestor(itemRequest.getRequestor());
+                    itemRequestInItemRequests.setUserId(itemRequest.getUserId());
                     itemRequestInItemRequests.setCreated(itemRequest.getCreated());
                     log.info("Обновлён запрос {}", itemRequest);
                     break;
@@ -36,7 +35,8 @@ public class ItemRequestStorageInMemory implements ItemRequestStorage {
             }
 
             if (!isPresent) {
-                log.error("Попытка изменения значения полей несуществующего запроса (нет совпадений по id {}).", itemRequest.getId());
+                log.error("Попытка изменения значения полей несуществующего запроса (нет совпадений по id {}).",
+                        itemRequest.getItemRequestId());
                 throw new ValidationException("Запрос с таким id не существует (нечего обновлять). " +
                         "Значения полей запроса не были обновлены.");
             }
@@ -50,7 +50,7 @@ public class ItemRequestStorageInMemory implements ItemRequestStorage {
     public ItemRequest getItemRequestById(Long id) {
         try {
             for (ItemRequest itemRequest : itemRequests) {
-                if (itemRequest.getId() == id) {
+                if (itemRequest.getItemRequestId() == id) {
                     return itemRequest;
                 }
             }
@@ -71,7 +71,7 @@ public class ItemRequestStorageInMemory implements ItemRequestStorage {
     public void removeItemRequestById(Long id) {
         try {
             for (ItemRequest itemRequest : itemRequests) {
-                if (itemRequest.getId() == id) {
+                if (itemRequest.getItemRequestId() == id) {
                     itemRequests.remove(itemRequest);
                     break;
                 }

@@ -15,6 +15,7 @@ import ru.practicum.shareit.users.User;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -38,8 +39,8 @@ public class BookingServiceDao implements BookingService {
 
     @Override
     public Booking createBooking(Booking booking, Long userId) {
-        booking.setBooker(userId);
-        booking.setStatus(statusStorageInMemory.getStatusIdByName("waiting"));
+        booking.setUserId(userId);
+        booking.setStatusId(statusStorageInMemory.getStatusIdByName("waiting"));
         Booking bookingInDb = bookingStorageDb.createBooking(booking);
         bookingStorageInMemory.createBooking(bookingInDb);
         return bookingInDb;
@@ -47,7 +48,7 @@ public class BookingServiceDao implements BookingService {
 
     @Override
     public Booking updateBooking(Booking booking, Long userId) {
-        if (booking.getBooker() == userId) {
+        if (booking.getUserId() == userId) {
             bookingStorageInMemory.updateBooking(booking);
             bookingStorageDb.updateBooking(booking);
         }
@@ -57,8 +58,8 @@ public class BookingServiceDao implements BookingService {
     @Override
     public void changeStatus (Long bookingId, Boolean approved, Long statusId, Long userId) {
         try {
-            if (itemStorageInMemory.getItemById(bookingStorageInMemory.getBookingById(bookingId).getItem()).getOwner() == userId) {
-                if (!(bookingStorageInMemory.getBookingById(bookingId).getStatus() ==
+            if (itemStorageInMemory.getItemById(bookingStorageInMemory.getBookingById(bookingId).getItemId()).getUserId() == userId) {
+                if (!(bookingStorageInMemory.getBookingById(bookingId).getStatusId() ==
                         statusStorageInMemory.getStatusIdByName("canceled"))) {
                     if (approved) {
                         statusId = statusStorageInMemory.getStatusIdByName("approved");
@@ -69,8 +70,8 @@ public class BookingServiceDao implements BookingService {
                     bookingStorageDb.changeStatus(bookingId, statusId);
                 }
             } else {
-                if (bookingStorageInMemory.getBookingById(bookingId).getBooker() == userId) {
-                    if ((bookingStorageInMemory.getBookingById(bookingId).getStatus() ==
+                if (bookingStorageInMemory.getBookingById(bookingId).getUserId() == userId) {
+                    if ((bookingStorageInMemory.getBookingById(bookingId).getStatusId() ==
                             statusStorageInMemory.getStatusIdByName("canceled"))) {
                         statusId = statusStorageInMemory.getStatusIdByName("canceled");
                         bookingStorageInMemory.changeStatus(bookingId, statusId);
@@ -89,12 +90,12 @@ public class BookingServiceDao implements BookingService {
     }
 
     @Override
-    public Booking getBookingById(Long id, Long userId) {
-        if (bookingStorageInMemory.getBookingById(id).getBooker() == userId ||
-                itemStorageInMemory.getItemById(bookingStorageInMemory.getBookingById(id).getItem()).getOwner() == userId) {
-            return bookingStorageInMemory.getBookingById(id);
+    public Optional<Booking> getBookingById(Long id, Long userId) {
+        if (bookingStorageInMemory.getBookingById(id).getUserId() == userId ||
+                itemStorageInMemory.getItemById(bookingStorageInMemory.getBookingById(id).getItemId()).getUserId() == userId) {
+            return  Optional.of(bookingStorageInMemory.getBookingById(id));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -115,66 +116,66 @@ public class BookingServiceDao implements BookingService {
     }
 
     @Override
-    public Item getItemOfBooking(Long id) {
+    public Optional<Item> getItemOfBooking(Long id) {
         SqlRowSet itemRows = bookingStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM items WHERE id = ?", bookingStorageInMemory.getBookingById(id).getItem());
+                "SELECT * FROM items WHERE item_id = ?", bookingStorageInMemory.getBookingById(id).getItemId());
         if (itemRows.next()) {
             Item item = new Item();
-            item.setId(itemRows.getLong("id"));
+            item.setItemId(itemRows.getLong("item_id"));
             item.setName(itemRows.getString("name"));
             item.setDescription(itemRows.getString("description"));
             item.setAvailable(itemRows.getBoolean("available"));
-            item.setRequest(itemRows.getLong("request"));
-            item.setOwner(id);
-            return item;
+            item.setRequestId(itemRows.getLong("item_request_id"));
+            item.setUserId(id);
+            return Optional.of(item);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public User getUserOfBooking(Long id) {
+    public Optional<User> getUserOfBooking(Long id) {
         SqlRowSet userRows = bookingStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM users WHERE id = ?", bookingStorageInMemory.getBookingById(id).getBooker());
+                "SELECT * FROM users WHERE user_id = ?", bookingStorageInMemory.getBookingById(id).getUserId());
         if (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getLong("id"));
+            user.setUserId(userRows.getLong("user_id"));
             user.setName(userRows.getString("name"));
             user.setEmail(userRows.getString("email"));
-            return user;
+            return Optional.of(user);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public Status getStatusOfBooking(Long id) {
+    public Optional<Status> getStatusOfBooking(Long id) {
         SqlRowSet statusRows = bookingStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM statuses WHERE id = ?", bookingStorageInMemory.getBookingById(id).getStatus());
+                "SELECT * FROM statuses WHERE status_id = ?", bookingStorageInMemory.getBookingById(id).getStatusId());
         if (statusRows.next()) {
             Status status = new Status();
-            status.setId(statusRows.getLong("id"));
+            status.setStatusId(statusRows.getLong("status_id"));
             status.setName(statusRows.getString("name"));
             status.setDescription(statusRows.getString("description"));
-            return status;
+            return Optional.of(status);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public Review getReviewOfBooking(Long id) {
+    public Optional<Review> getReviewOfBooking(Long id) {
         SqlRowSet bookingRows = bookingStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM reviews WHERE booking = ?", id);
+                "SELECT * FROM reviews WHERE booking_id = ?", id);
         if (bookingRows.next()) {
             Review review = new Review();
-            review.setId(bookingRows.getLong("id"));
+            review.setReviewId(bookingRows.getLong("review_id"));
             review.setDescription(bookingRows.getString("description"));
-            review.setItem(bookingRows.getLong("item"));
-            review.setReviewer(bookingRows.getLong("reviewer"));
+            review.setItemId(bookingRows.getLong("item_id"));
+            review.setUserId(bookingRows.getLong("user_id"));
             review.setDate(bookingRows.getDate("date").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             review.setEvaluation(bookingRows.getBoolean("evaluation"));
-            review.setBooking(bookingRows.getLong("booking"));
-            return review;
+            review.setBookingId(bookingRows.getLong("booking_id"));
+            return Optional.of(review);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -183,8 +184,8 @@ public class BookingServiceDao implements BookingService {
         switch (state) {
             case ("CURRENT"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getBooker() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                    if (booking.getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                             booking.getStart().isBefore(LocalDateTime.now()) &&
                             booking.getEnd().isAfter(LocalDateTime.now())) {
                         bookingsOfUser.add(booking);
@@ -193,8 +194,8 @@ public class BookingServiceDao implements BookingService {
                 break;
             case ("PAST"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getBooker() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                    if (booking.getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                             booking.getEnd().isBefore(LocalDateTime.now())) {
                         bookingsOfUser.add(booking);
                     }
@@ -202,8 +203,8 @@ public class BookingServiceDao implements BookingService {
                 break;
             case ("FUTURE"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getBooker() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                    if (booking.getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                             booking.getStart().isAfter(LocalDateTime.now()) &&
                             booking.getEnd().isAfter(LocalDateTime.now())) {
                         bookingsOfUser.add(booking);
@@ -212,23 +213,23 @@ public class BookingServiceDao implements BookingService {
                 break;
             case ("WAITING"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getBooker() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("waiting")) {
+                    if (booking.getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("waiting")) {
                         bookingsOfUser.add(booking);
                     }
                 }
                 break;
             case ("REJECTED"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getBooker() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("rejected")) {
+                    if (booking.getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("rejected")) {
                         bookingsOfUser.add(booking);
                     }
                 }
                 break;
             default: // "ALL"
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (booking.getBooker() == userId) {
+                    if (booking.getUserId() == userId) {
                         bookingsOfUser.add(booking);
                     }
                 }
@@ -243,8 +244,8 @@ public class BookingServiceDao implements BookingService {
         switch (state) {
             case ("CURRENT"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (itemStorageInMemory.getItemById(booking.getItem()).getOwner() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                    if (itemStorageInMemory.getItemById(booking.getItemId()).getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                             booking.getStart().isBefore(LocalDateTime.now()) &&
                             booking.getEnd().isAfter(LocalDateTime.now())) {
                         bookingsOfUser.add(booking);
@@ -253,8 +254,8 @@ public class BookingServiceDao implements BookingService {
                 break;
             case ("PAST"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (itemStorageInMemory.getItemById(booking.getItem()).getOwner() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                    if (itemStorageInMemory.getItemById(booking.getItemId()).getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                             booking.getEnd().isBefore(LocalDateTime.now())) {
                         bookingsOfUser.add(booking);
                     }
@@ -262,8 +263,8 @@ public class BookingServiceDao implements BookingService {
                 break;
             case ("FUTURE"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (itemStorageInMemory.getItemById(booking.getItem()).getOwner() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("approved") &&
+                    if (itemStorageInMemory.getItemById(booking.getItemId()).getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("approved") &&
                             booking.getStart().isAfter(LocalDateTime.now()) &&
                             booking.getEnd().isAfter(LocalDateTime.now())) {
                         bookingsOfUser.add(booking);
@@ -272,23 +273,23 @@ public class BookingServiceDao implements BookingService {
                 break;
             case ("WAITING"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (itemStorageInMemory.getItemById(booking.getItem()).getOwner() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("waiting")) {
+                    if (itemStorageInMemory.getItemById(booking.getItemId()).getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("waiting")) {
                         bookingsOfUser.add(booking);
                     }
                 }
                 break;
             case ("REJECTED"):
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (itemStorageInMemory.getItemById(booking.getItem()).getOwner() == userId &&
-                            booking.getStatus() == statusStorageInMemory.getStatusIdByName("rejected")) {
+                    if (itemStorageInMemory.getItemById(booking.getItemId()).getUserId() == userId &&
+                            booking.getStatusId() == statusStorageInMemory.getStatusIdByName("rejected")) {
                         bookingsOfUser.add(booking);
                     }
                 }
                 break;
             default: // "ALL"
                 for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                    if (itemStorageInMemory.getItemById(booking.getItem()).getOwner() == userId) {
+                    if (itemStorageInMemory.getItemById(booking.getItemId()).getUserId() == userId) {
                         bookingsOfUser.add(booking);
                     }
                 }

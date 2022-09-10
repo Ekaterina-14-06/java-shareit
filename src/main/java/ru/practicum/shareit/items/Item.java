@@ -14,7 +14,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotBlank
     @UniqueElements
-    private Long id;
+    private Long itemId;
 
     @Column(name = "name")
     @NotBlank
@@ -27,10 +27,10 @@ public class Item {
     @NotBlank
     private Boolean available;
 
-    @Column(name = "owner")
+    @Column(name = "user_id")
     @NotBlank
-    private Long owner;
+    private Long userId;
 
-    @Column(name = "request")
-    private Long request;
+    @Column(name = "request_id")
+    private Long requestId;
 }

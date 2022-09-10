@@ -26,8 +26,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         this.itemStorageInMemory = itemStorageInMemory;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public ItemRequest createItemRequest(ItemRequest itemRequest) {
         ItemRequest itemRequestInDb = itemRequestStorageDb.createItemRequest(itemRequest);
@@ -64,12 +62,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         itemRequestStorageDb.removeAllItemRequests();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public User getUserOfItemRequest(Long id) {
         for (User user : userStorageInMemory.getAllUsers()) {
-            if (user.getId() == getItemRequestById(id).getRequestor()) {
+            if (user.getUserId() == getItemRequestById(id).getUserId()) {
                 return user;
             }
         }
@@ -80,7 +76,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public Set<Item> getItemsOfItemRequest(Long id) {
         Set<Item> itemsOfItemRequest = new HashSet<>();
         for (Item item : itemStorageInMemory.getAllItems()) {
-            if (item.getRequest() == getItemRequestById(id).getId()) {
+            if (item.getRequestId() == getItemRequestById(id).getItemRequestId()) {
                 itemsOfItemRequest.add(item);
             }
         }

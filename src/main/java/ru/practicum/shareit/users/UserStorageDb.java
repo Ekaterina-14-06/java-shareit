@@ -28,17 +28,17 @@ public class UserStorageDb implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        jdbcTemplate.update("UPDATE users SET name = ?, email = ? WHERE id = ?",
-                user.getName(), user.getEmail(), user.getId());
+        jdbcTemplate.update("UPDATE users SET name = ?, email = ? WHERE user_id = ?",
+                user.getName(), user.getEmail(), user.getUserId());
         return user;
     }
 
     @Override
     public User getUserById(Long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id = ?", id);
         if (userRows.next()) {
             User user = new User();
-            user.setId(id);
+            user.setUserId(id);
             user.setName(userRows.getString("name"));
             user.setEmail(userRows.getString("email"));
             return user;
@@ -53,7 +53,7 @@ public class UserStorageDb implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
         while (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getLong("id"));
+            user.setUserId(userRows.getLong("user_id"));
             user.setName(userRows.getString("name"));
             user.setEmail(userRows.getString("email"));
             users.add(user);
@@ -63,7 +63,7 @@ public class UserStorageDb implements UserStorage {
 
     @Override
     public void removeUserById(Long id) {
-        jdbcTemplate.update("DELETE * FROM users WHERE id = ?", id);
+        jdbcTemplate.update("DELETE * FROM users WHERE user_id = ?", id);
     }
 
     @Override

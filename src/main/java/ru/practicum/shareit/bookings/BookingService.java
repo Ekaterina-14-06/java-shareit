@@ -5,6 +5,7 @@ import ru.practicum.shareit.reviews.Review;
 import ru.practicum.shareit.statuses.Status;
 import ru.practicum.shareit.users.User;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface BookingService {
@@ -14,7 +15,7 @@ public interface BookingService {
 
     void changeStatus (Long bookingId, Boolean approved, Long statusId, Long userId);
 
-    Booking getBookingById(Long id, Long userId);
+    Optional<Booking> getBookingById(Long id, Long userId);
 
     Set<Booking> getAllBookings();
 
@@ -22,13 +23,13 @@ public interface BookingService {
 
     void removeAllBookings();
 
-    Item getItemOfBooking(Long id);
+    Optional<Item> getItemOfBooking(Long id);
 
-    User getUserOfBooking(Long id);
+    Optional<User> getUserOfBooking(Long id);
 
-    Status getStatusOfBooking(Long id);
+    Optional<Status> getStatusOfBooking(Long id);
 
-    Review getReviewOfBooking(Long id);
+    Optional<Review> getReviewOfBooking(Long id);
 
     Set<Booking> getBookingsOfUser(String state, Long userId);
 

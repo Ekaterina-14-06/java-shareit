@@ -24,20 +24,21 @@ public class ItemStorageInMemory implements ItemStorage {
         try {
             boolean isPresent = false;
             for (Item itemInItems : items) {
-                if (itemInItems.getId() == item.getId()) {
+                if (itemInItems.getItemId() == item.getItemId()) {
                     isPresent = true;
                     itemInItems.setName(item.getName());
                     itemInItems.setDescription(item.getDescription());
-                    itemInItems.setOwner(item.getOwner());
+                    itemInItems.setUserId(item.getUserId());
                     itemInItems.setAvailable(item.getAvailable());
-                    itemInItems.setRequest(item.getRequest());
+                    itemInItems.setRequestId(item.getRequestId());
                     log.info("Обновлены значения полей вещи {}", item);
                     break;
                 }
             }
 
             if (!isPresent) {
-                log.error("Попытка изменения значения полей несуществующей вещи (нет совпадений по id {}).", item.getId());
+                log.error("Попытка изменения значения полей несуществующей вещи (нет совпадений по id {}).",
+                        item.getItemId());
                 throw new ValidationException("Вещи с таким id не существует (нечего обновлять). " +
                         "Значения полей вещи не были обновлены.");
             }
@@ -51,7 +52,7 @@ public class ItemStorageInMemory implements ItemStorage {
     public Item getItemById(Long id) {
         try {
             for (Item item : items) {
-                if (item.getId() == id) {
+                if (item.getItemId() == id) {
                     return item;
                 }
             }
@@ -72,7 +73,7 @@ public class ItemStorageInMemory implements ItemStorage {
     public void removeItemById(Long id) {
         try {
             for (Item item : items) {
-                if (item.getId() == id) {
+                if (item.getItemId() == id) {
                     items.remove(item);
                     break;
                 }

@@ -5,12 +5,14 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.ValidationException;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
 @Slf4j
 public class BookingStorageInMemory implements BookingStorage {
     private final Set<Booking> bookings = new HashSet<>();
+    private final Set<BookingDto> bookingDtos = new HashSet<>();
 
     @Override
     public Booking createBooking(Booking booking) {
@@ -24,20 +26,20 @@ public class BookingStorageInMemory implements BookingStorage {
         try {
             boolean isPresent = false;
             for (Booking bookingInBookings : bookings) {
-                if (bookingInBookings.getId() == booking.getId()) {
+                if (bookingInBookings.getBookingId() == booking.getBookingId()) {
                     isPresent = true;
                     bookingInBookings.setStart(booking.getStart());
                     bookingInBookings.setEnd(booking.getEnd());
-                    bookingInBookings.setItem(booking.getItem());
-                    bookingInBookings.setBooker(booking.getBooker());
-                    bookingInBookings.setStatus(booking.getStatus());
-                    log.info("Обновлно бронирование {}", booking);
+                    bookingInBookings.setItemId(booking.getItemId());
+                    bookingInBookings.setUserId(booking.getUserId());
+                    bookingInBookings.setStatusId(booking.getStatusId());
+                    log.info("Обновлено бронирование {}", booking);
                     break;
                 }
             }
 
             if (!isPresent) {
-                log.error("Попытка изменить свойства несуществующего бронирования (нет совпадений по id {}).", booking.getId());
+                log.error("Попытка изменить свойства несуществующего бронирования (нет совпадений по id {}).", booking.getBookingId());
                 throw new ValidationException("Бронирования с таким id не существует (некого обновлять). " +
                         "Запись о бронировании не была обновлена.");
             }
@@ -51,7 +53,7 @@ public class BookingStorageInMemory implements BookingStorage {
     public Booking getBookingById(Long id) {
         try {
             for (Booking booking : bookings) {
-                if (booking.getId() == id) {
+                if (booking.getBookingId() == id) {
                     return booking;
                 }
             }
@@ -72,7 +74,7 @@ public class BookingStorageInMemory implements BookingStorage {
     public void removeBookingById(Long id) {
         try {
             for (Booking booking : bookings) {
-                if (booking.getId() == id) {
+                if (booking.getBookingId() == id) {
                     bookings.remove(booking);
                     break;
                 }
@@ -95,9 +97,9 @@ public class BookingStorageInMemory implements BookingStorage {
         try {
             boolean isPresent = false;
             for (Booking bookingInBookings : bookings) {
-                if (bookingInBookings.getId() == bookingId) {
+                if (bookingInBookings.getBookingId() == bookingId) {
                     isPresent = true;
-                    bookingInBookings.setStatus(statusId);
+                    bookingInBookings.setStatusId(statusId);
                     log.info("Обновлен статус");
                     break;
                 }
@@ -111,5 +113,9 @@ public class BookingStorageInMemory implements BookingStorage {
         } catch (ValidationException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public Set<BookingDto> getAllBookingDtos() {
+        return bookingDtos;
     }
 }

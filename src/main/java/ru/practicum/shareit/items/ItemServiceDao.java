@@ -24,8 +24,6 @@ public class ItemServiceDao implements ItemService {
         this.itemStorageDb = itemStorageDb;
     }
 
-    //=================================================== CRUD =======================================================
-
     @Override
     public Item createItem(Item item) {
         Item itemInDb = itemStorageDb.createItem(item);
@@ -62,15 +60,13 @@ public class ItemServiceDao implements ItemService {
         itemStorageDb.removeAllItems();
     }
 
-    //=============================================== БИЗНЕС-ЛОГИКА ===================================================
-
     @Override
     public User getUserOfItem(Long id) {
         SqlRowSet userRows = itemStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM users WHERE id = ?", getItemById(id).getOwner());
+                "SELECT * FROM users WHERE user_id = ?", getItemById(id).getUserId());
         if (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getLong("id"));
+            user.setUserId(userRows.getLong("user_id"));
             user.setName(userRows.getString("name"));
             user.setEmail(userRows.getString("email"));
             return user;
@@ -82,17 +78,17 @@ public class ItemServiceDao implements ItemService {
     public Set<Review> getReviewsOfItem(Long id) {
         Set<Review> reviews = new HashSet<>();
         SqlRowSet reviewRows = itemStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM reviews WHERE item = ?", id);
+                "SELECT * FROM reviews WHERE item_id = ?", id);
         while (reviewRows.next()) {
             Review review = new Review();
-            review.setId(reviewRows.getLong("id"));
+            review.setReviewId(reviewRows.getLong("review_id"));
             review.setDescription(reviewRows.getString("description"));
-            review.setItem(reviewRows.getLong("item"));
-            review.setReviewer(reviewRows.getLong("reviewer"));
+            review.setItemId(reviewRows.getLong("item_id"));
+            review.setUserId(reviewRows.getLong("user_id"));
             review.setDate(reviewRows.getDate("date")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             review.setEvaluation(reviewRows.getBoolean("evaluation"));
-            review.setBooking(reviewRows.getLong("booking"));
+            review.setBookingId(reviewRows.getLong("booking_id"));
             reviews.add(review);
         }
         return reviews;
@@ -101,12 +97,12 @@ public class ItemServiceDao implements ItemService {
     @Override
     public ItemRequest getItemRequestOfItem(Long id) {
         SqlRowSet itemRequestRows = itemStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM item_requests WHERE id = ?", getItemById(id).getRequest());
+                "SELECT * FROM item_requests WHERE item_request_id = ?", getItemById(id).getRequestId());
         while (itemRequestRows.next()) {
             ItemRequest itemRequest = new ItemRequest();
-            itemRequest.setId(itemRequestRows.getLong("id"));
+            itemRequest.setItemRequestId(itemRequestRows.getLong("item_request_id"));
             itemRequest.setDescription(itemRequestRows.getString("description"));
-            itemRequest.setRequestor(itemRequestRows.getLong("requestor"));
+            itemRequest.setUserId(itemRequestRows.getLong("user_id"));
             itemRequest.setCreated(itemRequestRows.getDate("created")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             return itemRequest;
@@ -118,17 +114,17 @@ public class ItemServiceDao implements ItemService {
     public Set<Booking> getBookingsOfItem(Long id) {
         Set<Booking> bookings = new HashSet<>();
         SqlRowSet bookingRows = itemStorageDb.getJdbcTemplate().queryForRowSet(
-                "SELECT * FROM bookings WHERE item = ?", id);
+                "SELECT * FROM bookings WHERE item_id = ?", id);
         while (bookingRows.next()) {
             Booking booking = new Booking();
-            booking.setId(bookingRows.getLong("id"));
+            booking.setBookingId(bookingRows.getLong("booking_id"));
             booking.setStart(bookingRows.getDate("start")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             booking.setEnd(bookingRows.getDate("end")
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-            booking.setItem(bookingRows.getLong("item"));
-            booking.setBooker(bookingRows.getLong("booker"));
-            booking.setStatus(bookingRows.getLong("status"));
+            booking.setItemId(bookingRows.getLong("item_id"));
+            booking.setUserId(bookingRows.getLong("user_id"));
+            booking.setStatusId(bookingRows.getLong("status_id"));
             bookings.add(booking);
         }
         return bookings;

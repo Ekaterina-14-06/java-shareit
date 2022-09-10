@@ -24,7 +24,7 @@ public class StatusStorageInMemory implements StatusStorage {
         try {
             boolean isPresent = false;
             for (Status statusInStatuses : statuses) {
-                if (statusInStatuses.getId() == status.getId()) {
+                if (statusInStatuses.getStatusId() == status.getStatusId()) {
                     isPresent = true;
                     statusInStatuses.setName(status.getName());
                     statusInStatuses.setDescription(status.getDescription());
@@ -34,7 +34,8 @@ public class StatusStorageInMemory implements StatusStorage {
             }
 
             if (!isPresent) {
-                log.error("Попытка изменить значения полей несуществующего статуса (нет совпадений по id {}).", status.getId());
+                log.error("Попытка изменить значения полей несуществующего статуса (нет совпадений по id {}).",
+                        status.getStatusId());
                 throw new ValidationException("Статуса с таким id не существует (нечего обновлять). " +
                         "Значения полей статуса не были обновлены.");
             }
@@ -48,7 +49,7 @@ public class StatusStorageInMemory implements StatusStorage {
     public Status getStatusById(Long id) {
         try {
             for (Status status : statuses) {
-                if (status.getId() == id) {
+                if (status.getStatusId() == id) {
                     return status;
                 }
             }
@@ -65,7 +66,7 @@ public class StatusStorageInMemory implements StatusStorage {
         try {
             for (Status status : statuses) {
                 if (status.getName().equals(name)) {
-                    return status.getId();
+                    return status.getStatusId();
                 }
             }
 
@@ -86,7 +87,7 @@ public class StatusStorageInMemory implements StatusStorage {
     public void removeStatusById(Long id) {
         try {
             for (Status status : statuses) {
-                if (status.getId() == id) {
+                if (status.getStatusId() == id) {
                     statuses.remove(status);
                     break;
                 }

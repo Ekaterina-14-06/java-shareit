@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-
 public class ReviewStorageDb implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -23,43 +22,44 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public Review createReview(Review review) {
-        jdbcTemplate.update("INSERT INTO reviews (description, item, reviewer, date, evaluation, booking) " +
+        jdbcTemplate.update("INSERT INTO reviews (description, item_id, user_id, date, evaluation, booking_id) " +
                         "VALUES (?, ?, ?, ?, ?, ?)",
                 review.getDescription(),
-                review.getItem(),
-                review.getReviewer(),
+                review.getItemId(),
+                review.getUserId(),
                 review.getDate(),
                 review.getEvaluation(),
-                review.getBooking());
+                review.getBookingId());
         return review;
     }
 
     @Override
     public Review updateReview(Review review) {
         jdbcTemplate.update("UPDATE reviews SET " +
-                        "description = ?, item = ?, reviewer = ?, date = ?, evaluation = ?, booking = ? WHERE id = ?",
+                        "description = ?, item_id = ?, user_id = ?, date = ?, evaluation = ?, booking_id = ? " +
+                        "WHERE review_id = ?",
                 review.getDescription(),
-                review.getItem(),
-                review.getReviewer(),
+                review.getItemId(),
+                review.getUserId(),
                 review.getDate(),
                 review.getEvaluation(),
-                review.getId(),
-                review.getBooking());
+                review.getReviewId(),
+                review.getBookingId());
         return review;
     }
 
     @Override
     public Review getReviewById(Long id) {
-        SqlRowSet reviewRows = jdbcTemplate.queryForRowSet("SELECT * FROM reviews WHERE id = ?", id);
+        SqlRowSet reviewRows = jdbcTemplate.queryForRowSet("SELECT * FROM reviews WHERE review_id = ?", id);
         if (reviewRows.next()) {
             Review review = new Review();
-            review.setId(id);
+            review.setReviewId(id);
             review.setDescription(reviewRows.getString("description"));
-            review.setItem(reviewRows.getLong("item"));
-            review.setReviewer((reviewRows.getLong("reviewer")));
+            review.setItemId(reviewRows.getLong("item_id"));
+            review.setUserId((reviewRows.getLong("user_id")));
             review.setDate(reviewRows.getDate("date").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             review.setEvaluation(reviewRows.getBoolean("evaluation"));
-            review.setBooking(reviewRows.getLong("booking"));
+            review.setBookingId(reviewRows.getLong("booking_id"));
             return review;
         } else {
             return null;
@@ -72,13 +72,13 @@ public class ReviewStorageDb implements ReviewStorage {
         SqlRowSet reviewRows = jdbcTemplate.queryForRowSet("SELECT * FROM reviews");
         while (reviewRows.next()) {
             Review review = new Review();
-            review.setId(reviewRows.getLong("id"));
+            review.setReviewId(reviewRows.getLong("review_id"));
             review.setDescription(reviewRows.getString("description"));
-            review.setItem(reviewRows.getLong("item"));
-            review.setReviewer((reviewRows.getLong("reviewer")));
+            review.setItemId(reviewRows.getLong("item_id"));
+            review.setUserId((reviewRows.getLong("user_id")));
             review.setDate(reviewRows.getDate("date").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             review.setEvaluation(reviewRows.getBoolean("evaluation"));
-            review.setBooking(reviewRows.getLong("booking"));
+            review.setBookingId(reviewRows.getLong("booking_id"));
             reviews.add(review);
         }
         return reviews;
@@ -86,7 +86,7 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public void removeReviewById(Long id) {
-        jdbcTemplate.update("DELETE * FROM reviews WHERE id = ?", id);
+        jdbcTemplate.update("DELETE * FROM reviews WHERE review_id = ?", id);
     }
 
     @Override

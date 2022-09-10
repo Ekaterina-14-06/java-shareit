@@ -31,14 +31,14 @@ public class ReviewStorageInMemory implements ReviewStorage {
             Long statusIdOfApproved = -1L;
             for (Status status : statusStorageInMemory.getAllStatuses()) {
                 if (status.getName().equals("approved")) {
-                    statusIdOfApproved = status.getId();
+                    statusIdOfApproved = status.getStatusId();
                 }
             }
 
             Boolean isBookingExistsAndApprovedAndEnds = false;
             for (Booking booking : bookingStorageInMemory.getAllBookings()) {
-                if (booking.getId() == review.getBooking()) {
-                    if (booking.getStatus() == statusIdOfApproved) {
+                if (booking.getBookingId() == review.getBookingId()) {
+                    if (booking.getStatusId() == statusIdOfApproved) {
                         if (booking.getEnd().isBefore(LocalDateTime.now())) {
                             isBookingExistsAndApprovedAndEnds = true;
                         }
@@ -66,21 +66,22 @@ public class ReviewStorageInMemory implements ReviewStorage {
         try {
             boolean isPresent = false;
             for (Review revuewInReviews : reviews) {
-                if (revuewInReviews.getId() == review.getId()) {
+                if (revuewInReviews.getReviewId() == review.getReviewId()) {
                     isPresent = true;
                     revuewInReviews.setDescription(review.getDescription());
-                    revuewInReviews.setItem(review.getItem());
-                    revuewInReviews.setReviewer(review.getReviewer());
+                    revuewInReviews.setItemId(review.getItemId());
+                    revuewInReviews.setUserId(review.getUserId());
                     revuewInReviews.setDate(review.getDate());
                     revuewInReviews.setEvaluation(review.getEvaluation());
-                    revuewInReviews.setBooking(review.getBooking());
+                    revuewInReviews.setBookingId(review.getBookingId());
                     log.info("Обновлён отзыв {}", review);
                     break;
                 }
             }
 
             if (!isPresent) {
-                log.error("Попытка изменения значения полей несуществующего отзыва (нет совпадений по id {}).", review.getId());
+                log.error("Попытка изменения значения полей несуществующего отзыва (нет совпадений по id {}).",
+                        review.getReviewId());
                 throw new ValidationException("Отзыва с таким id не существует (нечего обновлять). " +
                         "Значения полей отзыва не были обновлены.");
             }
@@ -94,7 +95,7 @@ public class ReviewStorageInMemory implements ReviewStorage {
     public Review getReviewById(Long id) {
         try {
             for (Review review : reviews) {
-                if (review.getId() == id) {
+                if (review.getReviewId() == id) {
                     return review;
                 }
             }
@@ -116,7 +117,7 @@ public class ReviewStorageInMemory implements ReviewStorage {
     public void removeReviewById(Long id) {
         try {
             for (Review review : reviews) {
-                if (review.getId() == id) {
+                if (review.getReviewId() == id) {
                     reviews.remove(review);
                     break;
                 }
