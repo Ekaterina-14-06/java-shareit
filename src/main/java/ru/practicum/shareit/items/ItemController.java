@@ -3,10 +3,12 @@ package ru.practicum.shareit.items;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.bookings.Booking;
+import ru.practicum.shareit.bookings.BookingDto;
 import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.ItemRequestDto;
 import ru.practicum.shareit.reviews.Review;
+import ru.practicum.shareit.reviews.ReviewDto;
 import ru.practicum.shareit.reviews.ReviewServiceImpl;
-import ru.practicum.shareit.users.User;
 import ru.practicum.shareit.users.UserDto;
 
 import javax.validation.Valid;
@@ -71,23 +73,18 @@ public class ItemController {
     }
 
     @GetMapping("/{id}/reviews")
-    public Set<Review> getReviewsOfItem(@PathVariable("id") Long id) {
-        return itemServiceImpl.getReviewsOfItem(id);
-    }
-
-    @GetMapping("/{id}/itemRequest")
-    public ItemRequest getItemRequestOfItem(@PathVariable("id") Long id) {
-        return itemServiceImpl.getItemRequestOfItem(id);
+    public Set<ReviewDto> getReviewsOfItem(@PathVariable("id") Long id) {
+        return itemServiceDto.getReviewsOfItem(id);
     }
 
     @GetMapping("/{id}/bookings")
-    public Set<Booking> getBookingsOfItem(@PathVariable("id") Long id) {
-        return itemServiceImpl.getBookingsOfItem(id);
+    public Set<BookingDto> getBookingsOfItem(@PathVariable("id") Long id) {
+        return itemServiceDto.getBookingsOfItem(id);
     }
 
     @GetMapping("/search")
-    public Set<Item> findItemById(@RequestParam("text") String text) {
-        return itemServiceImpl.findItemById(text);
+    public Set<ItemDto> findItemById(@RequestParam("text") String text) {
+        return itemServiceDto.findItemById(text);
     }
 
     @PostMapping("/{itemId}/comment")

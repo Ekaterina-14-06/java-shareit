@@ -11,7 +11,7 @@ import java.util.Set;
 @Component
 public class UserStorageInMemory implements UserStorage {
     private final Set<User> users = new HashSet<>();
-    private final Set<UserDto> userDtos = new HashSet<>();
+
 
     @Override
     public User createUser(User user) {
@@ -89,9 +89,5 @@ public class UserStorageInMemory implements UserStorage {
     @Override
     public void removeAllUsers() {
         users.clear();
-    }
-
-    public Set<UserDto> getAllUserDtos() {
-        return userDtos;
     }
 }

@@ -3,7 +3,9 @@ package ru.practicum.shareit.requests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.items.Item;
+import ru.practicum.shareit.items.ItemDto;
 import ru.practicum.shareit.users.User;
+import ru.practicum.shareit.users.UserDto;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -12,10 +14,13 @@ import java.util.Set;
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
     private final ItemRequestServiceImpl itemRequestServiceImpl;
+    private final ItemRequestServiceDto itemRequestServiceDto;
 
     @Autowired
-    public ItemRequestController(ItemRequestServiceImpl itemRequestServiceImpl) {
+    public ItemRequestController(ItemRequestServiceImpl itemRequestServiceImpl,
+                                 ItemRequestServiceDto itemRequestServiceDto) {
         this.itemRequestServiceImpl = itemRequestServiceImpl;
+        this.itemRequestServiceDto = itemRequestServiceDto;
     }
 
     @PostMapping()
@@ -39,22 +44,22 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{id}")
-    public ItemRequest getIteRequestById(@PathVariable("id") Long id) {
-        return itemRequestServiceImpl.getItemRequestById(id);
+    public ItemRequestDto getIteRequestById(@PathVariable("id") Long id) {
+        return itemRequestServiceDto.getItemRequestById(id);
     }
 
     @GetMapping()
-    public Set<ItemRequest> getAllItemRequests() {
-        return itemRequestServiceImpl.getAllItemRequests();
+    public Set<ItemRequestDto> getAllItemRequests() {
+        return itemRequestServiceDto.getAllItemRequests();
     }
 
     @GetMapping("/{id}/users")
-    public User getUserOfItemRequest(@PathVariable("id") Long id) {
-        return itemRequestServiceImpl.getUserOfItemRequest(id);
+    public UserDto getUserOfItemRequest(@PathVariable("id") Long id) {
+        return itemRequestServiceDto.getUserOfItemRequest(id);
     }
 
     @GetMapping("/{id}/items")
-    public Set<Item> getItemsOfItemRequest(@PathVariable("id") Long id) {
-        return itemRequestServiceImpl.getItemsOfItemRequest(id);
+    public Set<ItemDto> getItemsOfItemRequest(@PathVariable("id") Long id) {
+        return itemRequestServiceDto.getItemsOfItemRequest(id);
     }
 }

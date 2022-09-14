@@ -24,7 +24,6 @@ public class Booking {
     private LocalDateTime end;
 
     @Column(name = "item_id")
-    @NotBlank
     private Long itemId;
 
     @Column(name = "user_id")
@@ -32,7 +31,6 @@ public class Booking {
     private Long userId;
 
     @Column(name = "status_id")
-    @NotBlank
     private Long statusId;
 }
 

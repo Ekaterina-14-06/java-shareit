@@ -3,9 +3,13 @@ package ru.practicum.shareit.bookings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.items.Item;
+import ru.practicum.shareit.items.ItemDto;
 import ru.practicum.shareit.reviews.Review;
+import ru.practicum.shareit.reviews.ReviewDto;
 import ru.practicum.shareit.statuses.Status;
+import ru.practicum.shareit.statuses.StatusDto;
 import ru.practicum.shareit.users.User;
+import ru.practicum.shareit.users.UserDto;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -55,21 +59,21 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public Optional<BookingDto> getBookingById(@PathVariable("bookingId") Long id,
+    public BookingDto getBookingById(@PathVariable("bookingId") Long id,
                                      @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingServiceDto.getBookingById(id, userId);
     }
 
     @GetMapping()
-    public Set<Booking> getBookingsOfUser(@RequestParam String state,
+    public Set<BookingDto> getBookingsOfUser(@RequestParam String state,
                                           @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return bookingServiceImpl.getBookingsOfUser(state, userId);
+        return bookingServiceDto.getBookingsOfUser(state, userId);
     }
 
     @GetMapping("/owner")
-    public Set<Booking> getBookingsOfOwner(@RequestParam String state,
+    public Set<BookingDto> getBookingsOfOwner(@RequestParam String state,
                                            @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return bookingServiceImpl.getBookingsOfOwner(state, userId);
+        return bookingServiceDto.getBookingsOfOwner(state, userId);
     }
 
     @GetMapping()
@@ -78,22 +82,22 @@ public class BookingController {
     }
 
     @GetMapping("/{id}/items")
-    public Optional<Item> getItemOfBooking(@PathVariable("id") Long id) {
-        return bookingServiceImpl.getItemOfBooking(id);
+    public Optional<ItemDto> getItemOfBooking(@PathVariable("id") Long id) {
+        return bookingServiceDto.getItemOfBooking(id);
     }
 
     @GetMapping("/{id}/users")
-    public Optional<User> getUserOfBooking(@PathVariable("id") Long id) {
-        return bookingServiceImpl.getUserOfBooking(id);
+    public Optional<UserDto> getUserOfBooking(@PathVariable("id") Long id) {
+        return bookingServiceDto.getUserOfBooking(id);
     }
 
     @GetMapping("/{id}/statuses")
-    public Optional<Status> getStatusOfBooking(@PathVariable("id") Long id) {
-        return bookingServiceImpl.getStatusOfBooking(id);
+    public Optional<StatusDto> getStatusOfBooking(@PathVariable("id") Long id) {
+        return bookingServiceDto.getStatusOfBooking(id);
     }
 
     @GetMapping("/{id}/reviews")
-    public Optional<Review> getReviewOfBooking(@PathVariable("id") Long id) {
-        return bookingServiceImpl.getReviewOfBooking(id);
+    public Optional<ReviewDto> getReviewOfBooking(@PathVariable("id") Long id) {
+        return bookingServiceDto.getReviewOfBooking(id);
     }
 }

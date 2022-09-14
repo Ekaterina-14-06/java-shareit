@@ -2,7 +2,7 @@ package ru.practicum.shareit.reviews;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.bookings.Booking;
+import ru.practicum.shareit.bookings.BookingDto;
 
 
 import javax.validation.Valid;
@@ -12,10 +12,13 @@ import java.util.Set;
 @RequestMapping(path = "/reviews")
 public class ReviewController {
     private final ReviewServiceImpl reviewServiceImpl;
+    private final ReviewServiceDto reviewServiceDto;
 
     @Autowired
-    public ReviewController(ReviewServiceImpl reviewServiceImpl) {
+    public ReviewController(ReviewServiceImpl reviewServiceImpl,
+                            ReviewServiceDto reviewServiceDto) {
         this.reviewServiceImpl = reviewServiceImpl;
+        this.reviewServiceDto = reviewServiceDto;
     }
 
     @PostMapping()
@@ -39,17 +42,17 @@ public class ReviewController {
     }
 
     @GetMapping("/{id}")
-    public Review getReviewById(@PathVariable("id") Long id) {
-        return reviewServiceImpl.getReviewById(id);
+    public ReviewDto getReviewById(@PathVariable("id") Long id) {
+        return reviewServiceDto.getReviewById(id);
     }
 
     @GetMapping()
-    public Set<Review> getAllReviews() {
-        return reviewServiceImpl.getAllReviews();
+    public Set<ReviewDto> getAllReviews() {
+        return reviewServiceDto.getAllReviews();
     }
 
     @GetMapping("/{id}/bookings")
-    public Booking getBookingOfReview(@PathVariable("id") Long id) {
-        return reviewServiceImpl.getBookingOfReview(id);
+    public BookingDto getBookingOfReview(@PathVariable("id") Long id) {
+        return reviewServiceDto.getBookingOfReview(id);
     }
 }

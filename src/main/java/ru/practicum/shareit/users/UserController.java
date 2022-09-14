@@ -3,9 +3,13 @@ package ru.practicum.shareit.users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.bookings.Booking;
+import ru.practicum.shareit.bookings.BookingDto;
 import ru.practicum.shareit.items.Item;
+import ru.practicum.shareit.items.ItemDto;
 import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.ItemRequestDto;
 import ru.practicum.shareit.reviews.Review;
+import ru.practicum.shareit.reviews.ReviewDto;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -49,13 +53,13 @@ public class UserController {
     }
 
     @GetMapping()
-    public Set<UserDto> getAllUserDtos() {
-        return userServiceDto.getAllUserDtos();
+    public Set<UserDto> getAllUsers() {
+        return userServiceDto.getAllUsers();
     }
 
     @GetMapping("/{id}/items")
-    public Set<Item> getItemsOfUser(@PathVariable("id") Long id) {
-        return userServiceImpl.getItemsOfUser(id);
+    public Set<ItemDto> getItemsOfUser(@PathVariable("id") Long id) {
+        return userServiceDto.getItemsOfUser(id);
     }
 
     @DeleteMapping("/{id}/items")
@@ -64,8 +68,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/itemRequests")
-    public Set<ItemRequest> getItemRequestsOfUser(@PathVariable("id") Long id) {
-        return userServiceImpl.getItemRequestsOfUser(id);
+    public Set<ItemRequestDto> getItemRequestsOfUser(@PathVariable("id") Long id) {
+        return userServiceDto.getItemRequestsOfUser(id);
     }
 
     @DeleteMapping("/{id}/itemRequests")
@@ -74,8 +78,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/bookings")
-    public Set<Booking> getBookingsOfUser(@PathVariable("id") Long id) {
-        return userServiceImpl.getBookingsOfUser(id);
+    public Set<BookingDto> getBookingsOfUser(@PathVariable("id") Long id) {
+        return userServiceDto.getBookingsOfUser(id);
     }
 
     @DeleteMapping("/{id}/bookings")
@@ -84,8 +88,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reviews")
-    public Set<Review> getReviewsOfUser(@PathVariable("id") Long id) {
-        return userServiceImpl.getReviewsOfUser(id);
+    public Set<ReviewDto> getReviewsOfUser(@PathVariable("id") Long id) {
+        return userServiceDto.getReviewsOfUser(id);
     }
 
     @DeleteMapping("/{id}/reviews")

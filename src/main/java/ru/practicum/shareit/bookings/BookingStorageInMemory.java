@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.ValidationException;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Component

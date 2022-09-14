@@ -2,7 +2,7 @@ package ru.practicum.shareit.statuses;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.bookings.Booking;
+import ru.practicum.shareit.bookings.BookingDto;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -11,10 +11,13 @@ import java.util.Set;
 @RequestMapping(path = "/statuses")
 public class StatusController {
     private final StatusServiceImpl statusServiceImpl;
+    private final StatusServiceDto statusServiceDto;
 
     @Autowired
-    public StatusController(StatusServiceImpl statusServiceImpl) {
+    public StatusController(StatusServiceImpl statusServiceImpl,
+                            StatusServiceDto statusServiceDto) {
         this.statusServiceImpl = statusServiceImpl;
+        this.statusServiceDto = statusServiceDto;
     }
 
     @PostMapping()
@@ -38,18 +41,18 @@ public class StatusController {
     }
 
     @GetMapping("/{id}")
-    public Status getStatusById(@PathVariable("id") Long id) {
-        return statusServiceImpl.getStatusById(id);
+    public StatusDto getStatusById(@PathVariable("id") Long id) {
+        return statusServiceDto.getStatusById(id);
     }
 
     @GetMapping()
-    public Set<Status> getAllStatuses() {
-        return statusServiceImpl.getAllStatuses();
+    public Set<StatusDto> getAllStatuses() {
+        return statusServiceDto.getAllStatuses();
     }
 
     @GetMapping("/{id}/bookings")
-    public Set<Booking> getBookingsOfStatus(@PathVariable("id") Long id) {
-        return statusServiceImpl.getBookingsOfStatus(id);
+    public Set<BookingDto> getBookingsOfStatus(@PathVariable("id") Long id) {
+        return statusServiceDto.getBookingsOfStatus(id);
     }
 
     @DeleteMapping("/{id}/bookings")

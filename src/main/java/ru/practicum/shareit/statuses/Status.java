@@ -17,8 +17,6 @@ public class Status {
     private Long statusId;
 
     @Column(name = "name")
-    @NotBlank
-    @UniqueElements
     private String name;
 
     @Column(name = "description")

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Component

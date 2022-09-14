@@ -17,14 +17,12 @@ public class Item {
     private Long itemId;
 
     @Column(name = "name")
-    @NotBlank
     private String name;
 
     @Column(name = "description")
     private String description;
 
     @Column(name = "available")
-    @NotBlank
     private Boolean available;
 
     @Column(name = "user_id")

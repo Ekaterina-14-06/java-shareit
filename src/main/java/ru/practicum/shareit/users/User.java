@@ -4,7 +4,6 @@ import lombok.Data;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -18,12 +17,8 @@ public class User {
     private Long userId;
 
     @Column(name = "name")
-    @NotBlank
     private String name;
 
     @Column(name = "email")
-    @Email
-    @NotBlank
-    @UniqueElements
     private String email;
 }
