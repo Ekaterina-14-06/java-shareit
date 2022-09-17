@@ -64,7 +64,7 @@ public class BookingController {
         return bookingServiceDto.getBookingById(id, userId);
     }
 
-    @GetMapping()
+    @GetMapping("/user")
     public Set<BookingDto> getBookingsOfUser(@RequestParam String state,
                                           @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingServiceDto.getBookingsOfUser(state, userId);
