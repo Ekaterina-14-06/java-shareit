@@ -1,85 +1,73 @@
 package ru.practicum.shareit.requests;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.items.Item;
-import ru.practicum.shareit.items.ItemStorageInMemory;
-import ru.practicum.shareit.users.User;
-import ru.practicum.shareit.users.UserStorageInMemory;
+import ru.practicum.shareit.exceptions.BookingException;
+import ru.practicum.shareit.user.UserRepository;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
-    private final ItemRequestStorageInMemory itemRequestStorageInMemory;
-    private final ItemRequestStorageDb itemRequestStorageDb;
-    private final UserStorageInMemory userStorageInMemory;
-    private final ItemStorageInMemory itemStorageInMemory;
 
-    public ItemRequestServiceImpl(ItemRequestStorageInMemory itemRequestStorageInMemory,
-                                  ItemRequestStorageDb itemRequestStorageDb,
-                                  UserStorageInMemory userStorageInMemory,
-                                  ItemStorageInMemory itemStorageInMemory) {
-        this.itemRequestStorageInMemory = itemRequestStorageInMemory;
-        this.itemRequestStorageDb = itemRequestStorageDb;
-        this.userStorageInMemory = userStorageInMemory;
-        this.itemStorageInMemory = itemStorageInMemory;
+    private final ItemRequestRepository itemRequestRepository;
+    private final ItemRequestMapper mapper;
+    private final UserRepository userRepository;
+
+
+    @Autowired
+    public ItemRequestServiceImpl(ItemRequestRepository itemRequestRepository,
+                                  ItemRequestMapper mapper, UserRepository userRepository) {
+        this.itemRequestRepository = itemRequestRepository;
+        this.mapper = mapper;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public ItemRequest createItemRequest(ItemRequest itemRequest) {
-        ItemRequest itemRequestInDb = itemRequestStorageDb.createItemRequest(itemRequest);
-        itemRequestStorageInMemory.createItemRequest(itemRequestInDb);
-        return itemRequestInDb;
+    public ItemRequestDto save(ItemRequestDto itemRequestDto, long userId) {
+        ItemRequest itemRequest = mapper.toItemRequest(itemRequestDto);
+        itemRequest.setRequestor(userRepository.findById(userId)
+                .orElseThrow(() -> new BookingException("Incorrect userId")));
+        return mapper.toItemRequestDto(itemRequestRepository.save(itemRequest));
     }
 
     @Override
-    public ItemRequest updateItemRequest(ItemRequest itemRequest) {
-        itemRequestStorageInMemory.updateItemRequest(itemRequest);
-        itemRequestStorageDb.updateItemRequest(itemRequest);
-        return itemRequest;
+    public List<ItemRequestDtoWithItems> findAll(long userId) {
+        userRepository.findById(userId).orElseThrow(() ->
+                new BookingException("Пользователя с Id = " + userId + " нет в БД"));
+        return itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId)
+                .stream()
+                .map(mapper::toItemRequestDtoWithItems)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ItemRequest getItemRequestById(Long id) {
-        return itemRequestStorageInMemory.getItemRequestById(id);
+    public ItemRequestDtoWithItems findById(long userId, long itemRequestId) {
+        userRepository.findById(userId).orElseThrow(() ->
+                new BookingException("Пользователя с Id = " + userId + " нет в БД"));
+        ItemRequest itemRequest = itemRequestRepository
+                .findById(itemRequestId).orElseThrow(() ->
+                        new BookingException("Запроса с Id = " + itemRequestId + " нет в БД"));
+        return mapper.toItemRequestDtoWithItems(itemRequest);
     }
 
     @Override
-    public Set<ItemRequest> getAllItemRequests() {
-        return itemRequestStorageInMemory.getAllItemRequests();
+    public List<ItemRequestDtoWithItems> findAllWithPageable(long userId, int from, int size) {
+        int page = from / size;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("created"));
+        userRepository.findById(userId).orElseThrow(() ->
+                new BookingException("Пользователя с Id = " + userId + " нет в БД"));
+        return itemRequestRepository.findAll(pageable)
+                .stream()
+                .filter(itemRequest -> itemRequest.getRequestor().getId() != userId)
+                .map(mapper::toItemRequestDtoWithItems)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public void removeItemRequestById(Long id) {
-        itemRequestStorageInMemory.removeItemRequestById(id);
-        itemRequestStorageDb.removeItemRequestById(id);
-    }
-
-    @Override
-    public void removeAllItemRequests() {
-        itemRequestStorageInMemory.removeAllItemRequests();
-        itemRequestStorageDb.removeAllItemRequests();
-    }
-
-    @Override
-    public User getUserOfItemRequest(Long id) {
-        for (User user : userStorageInMemory.getAllUsers()) {
-            if (user.getUserId() == getItemRequestById(id).getUserId()) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Set<Item> getItemsOfItemRequest(Long id) {
-        Set<Item> itemsOfItemRequest = new HashSet<>();
-        for (Item item : itemStorageInMemory.getAllItems()) {
-            if (item.getRequestId() == getItemRequestById(id).getItemRequestId()) {
-                itemsOfItemRequest.add(item);
-            }
-        }
-        return itemsOfItemRequest;
-    }
 }

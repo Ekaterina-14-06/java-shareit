@@ -1,4 +1,4 @@
-package ru.practicum.shareit.requests;
+package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,16 +6,21 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemRequestDto {
+public class ItemDto {
 
     private Long id;
-    @NotBlank(message = "description should not be blank")
+    @NotBlank(message = "name should not be blank")
     @NotNull
+    private String name;
+    @NotNull
+    @NotBlank(message = "name should not be blank")
     private String description;
-    private LocalDateTime created;
+    @NotNull
+    private Boolean available;
+
+    private Long requestId;
 }

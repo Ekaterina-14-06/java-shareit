@@ -1,24 +1,17 @@
 package ru.practicum.shareit.requests;
 
-import ru.practicum.shareit.items.Item;
-import ru.practicum.shareit.users.User;
+import ru.practicum.shareit.requests.ItemRequestDto;
+import ru.practicum.shareit.requests.ItemRequestDtoWithItems;
 
-import java.util.Set;
+import java.util.List;
 
 public interface ItemRequestService {
-    ItemRequest createItemRequest(ItemRequest itemRequest);
+    ItemRequestDto save(ItemRequestDto itemRequestDto, long userId);
 
-    ItemRequest updateItemRequest(ItemRequest itemRequest);
+    List<ItemRequestDtoWithItems> findAll(long userId);
 
-    ItemRequest getItemRequestById(Long id);
+    ItemRequestDtoWithItems findById(long userId, long itemRequestId);
 
-    Set<ItemRequest> getAllItemRequests();
+    List<ItemRequestDtoWithItems> findAllWithPageable(long userId, int from, int size);
 
-    void removeItemRequestById(Long id);
-
-    void removeAllItemRequests();
-
-    User getUserOfItemRequest(Long id);
-
-    Set<Item> getItemsOfItemRequest(Long id);
 }

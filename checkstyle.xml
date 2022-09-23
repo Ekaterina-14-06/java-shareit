@@ -30,7 +30,7 @@
 		</module>
 		<module name="RegexpSinglelineJava">
 			<property name="format" value="^[ \t]*[{]"/>
-			<property name="ignoreComments" value="true"/>
+			<property name="ignorereviews" value="true"/>
 			<property name="message" value="Leading braces"/>
 		</module>
 
@@ -246,7 +246,7 @@
 			<metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
 		</module>
 		<module name="SuppressWarningsHolder"/>
-		<module name="SuppressionCommentFilter"/>
+		<module name="SuppressionreviewFilter"/>
 	</module>
 	<!--	<module name="NewlineAtEndOfFile"/>-->
 	<module name="SuppressWarningsFilter"/>

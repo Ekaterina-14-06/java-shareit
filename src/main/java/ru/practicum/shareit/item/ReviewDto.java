@@ -1,4 +1,4 @@
-package ru.practicum.shareit.requests;
+package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +11,12 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemRequestDto {
+public class ReviewDto {
 
     private Long id;
-    @NotBlank(message = "description should not be blank")
     @NotNull
-    private String description;
+    @NotBlank(message = "text message")
+    private String text;
+    private String authorName;
     private LocalDateTime created;
 }
