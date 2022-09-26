@@ -1,5 +1,6 @@
 package ru.practicum.shareit.requests;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.ItemDto;
@@ -12,18 +13,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ItemRequestMapper {
 
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
 
-    @Autowired
-    public ItemRequestMapper(ItemRepository itemRepository, ItemMapper itemMapper) {
-        this.itemRepository = itemRepository;
-        this.itemMapper = itemMapper;
-    }
-
     public ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
+
         return new ItemRequestDto(itemRequest.getId(),
                 itemRequest.getDescription(),
                 itemRequest.getCreated());

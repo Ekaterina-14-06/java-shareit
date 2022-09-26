@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -34,21 +36,6 @@ public class ItemServiceImpl implements ItemService {
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
     private final ItemRequestRepository itemRequestRepository;
-
-    @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, ItemMapper itemMapper,
-                           UserRepository userRepository, BookingRepository bookingRepository,
-                           BookingMapper bookingMapper, ReviewRepository reviewRepository,
-                           ReviewMapper reviewMapper, ItemRequestRepository itemRequestRepository) {
-        this.itemRepository = itemRepository;
-        this.itemMapper = itemMapper;
-        this.userRepository = userRepository;
-        this.bookingRepository = bookingRepository;
-        this.bookingMapper = bookingMapper;
-        this.reviewRepository = reviewRepository;
-        this.reviewMapper = reviewMapper;
-        this.itemRequestRepository = itemRequestRepository;
-    }
 
     @Override
     public ItemDtoWithBooking findById(long itemId, long userId) {
