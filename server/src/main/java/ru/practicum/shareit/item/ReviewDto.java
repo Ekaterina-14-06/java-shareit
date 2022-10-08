@@ -3,16 +3,16 @@ package ru.practicum.shareit.item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Value
 public class ReviewDto {
-    private Long id;
-    private String text;
+    Long id;
+    String text;
     @JsonIgnore
-    private Item item;
-    private String authorName;
-    private LocalDateTime created;
+    Item item;
+    String authorName;
+    LocalDateTime created;
 }

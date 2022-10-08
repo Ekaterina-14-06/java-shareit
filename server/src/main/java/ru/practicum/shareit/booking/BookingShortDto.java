@@ -1,15 +1,13 @@
 package ru.practicum.shareit.booking;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Value
 public class BookingShortDto {
-    private Long id;
-    private Long bookerId;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    Long id;
+    Long bookerId;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
 }
